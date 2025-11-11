@@ -1,0 +1,50 @@
+/ {
+    aliases { 
+        analogin0 = &adc1;
+        led0 = &led_r;
+        led1 = &led_g;
+        led2 = &led_b;
+        sw0  = &user_button_3;
+    };
+
+    leds {
+        compatible = "gpio-leds";
+
+        /* RGB COMMON ANODE -> use GPIO_ACTIVE_LOW */
+        led_r: red_led {
+            gpios = <&gpiob 5 GPIO_ACTIVE_LOW>;   /* D4 = PB5 */
+            label = "LED Red";
+        };
+        led_g: green_led {
+            gpios = <&gpiob 8 GPIO_ACTIVE_LOW>;   /* D5 = PB8 */
+            label = "LED Green";
+        };
+        led_b: blue_led {
+            gpios = <&gpiob 10 GPIO_ACTIVE_LOW>;  /* D6 = PB10 */
+            label = "LED Blue";
+        };
+    };
+};
+
+&adc1 {
+    status = "okay";
+    pinctrl-0 = <&adc1_in0_pa0>;
+    pinctrl-names = "default";
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    channel@0 {
+        reg = <0>;
+        zephyr,gain = "ADC_GAIN_1";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+        zephyr,resolution = <12>;
+    };
+};
+
+&pinctrl {
+    adc1_in0_pa0: adc1_in0_pa0 {
+        pinmux = <STM32_PINMUX('A', 0, ANALOG)>;
+    };
+};
+
