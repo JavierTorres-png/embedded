@@ -14,6 +14,8 @@
 #define MODE_BLUE   2
 #define MODE_OFF    3
 
+#define LIGHT_SENSITIVITY 8
+
 static const struct gpio_dt_spec ledBlue = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios);
 static const struct gpio_dt_spec ledRed = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec ledGreen = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
@@ -180,13 +182,36 @@ int main(void)
         if (mode == MODE_NORMAL) {
             struct sensor_msg msg;
             if (sensor_thread_try_get(&msg)) {
-                if (msg.pct < 33.0f) {
-                    count = 4;        // Red
-                } else if (msg.pct <= 66.0f) {
-                    count = 6;        // Yellow (Red+Green)
-                } else {
-                    count = 2;        // Green
-                }
+            float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
+            float light_pct = (scaled_raw <= 0)   ? 0.0f :
+            (scaled_raw >= 4095)? 100.0f :
+            (scaled_raw * 100.0f) / 4095.0f;
+            
+            if (light_pct < 33.0f) {
+                count = 4;        // Red
+            } else if (light_pct <= 66.0f) {
+                count = 6;        // Yellow (Red+Green)
+            } else {
+                count = 2;        // Green
+            }
+
+            float sens_g = 4096.0f; /* ±2g default */
+            if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
+            else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
+            float ax_g = msg.ax_raw / sens_g;
+            float ay_g = msg.ay_raw / sens_g;
+            float az_g = msg.az_raw / sens_g;
+
+            float rh = 0.0, tc = 0.0;
+            if (msg.rh_raw != 0) {
+                rh = (125.0 * msg.rh_raw / 65536.0) - 6.0;
+                if (rh < 0.0) { rh = 0.0; }
+                if (rh > 100.0) { rh = 100.0; }
+            }
+            if (msg.temp_raw != 0) {
+                tc = (175.72 * msg.temp_raw / 65536.0) - 46.85;
+            }
+
             }
         } else { // Always MODE_BLUE here
             count = 1;

@@ -42,9 +42,28 @@
     };
 };
 
+&i2c1 {
+    status = "okay";
+    clock-frequency = <400000>;
+    pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>;
+    pinctrl-names = "default";
+
+    mma8451@1d {
+        compatible = "nxp,mma8451";
+        reg = <0x1d>;
+        status = "okay";
+    };
+
+    si7021@40 {
+        compatible = "silabs,si7021";
+        reg = <0x40>;
+        status = "okay";
+    };
+
+};
+
 &pinctrl {
     adc1_in0_pa0: adc1_in0_pa0 {
         pinmux = <STM32_PINMUX('A', 0, ANALOG)>;
     };
 };
-
