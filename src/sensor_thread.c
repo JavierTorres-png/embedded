@@ -4,6 +4,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/uart.h>
 #include "sensor_thread.h"
 
 #define BUFFER_SIZE 1
@@ -45,6 +46,11 @@ static const struct i2c_dt_spec si7021 = {
     .addr = SI7021_ADDR,
 };
 
+static const struct device *uart_dev;
+
+#define RX_BUF_SIZE 64
+static uint8_t rx_buf[RX_BUF_SIZE];
+static size_t rx_buf_pos = 0;
 
 static struct sensor_msg latest;
 static struct k_mutex latest_mtx;
@@ -197,6 +203,21 @@ static int si7021_read_temp_raw(uint16_t *raw)
     return si7021_read16(raw);
 }
 
+static void uart2_irq_handler(const struct device *dev, void *user_data)
+{
+    ARG_UNUSED(user_data);
+
+    while (uart_irq_update(dev) && uart_irq_is_pending(dev)) {
+        if (uart_irq_rx_ready(dev)) {
+            uint8_t c;
+            if (uart_fifo_read(dev, &c, 1) > 0) {
+                if (rx_buf_pos < RX_BUF_SIZE) {
+                    rx_buf[rx_buf_pos++] = c;
+                }
+            }
+        }
+    }
+}
 
 static void sensor_entry(void *a, void *b, void *c                                                                                                                                                                                                                                                                                                                                                                                                )
 {
@@ -205,6 +226,15 @@ static void sensor_entry(void *a, void *b, void *c                              
         printk("ADC channel setup failed: %d\n", ret);
         return;
     }
+    
+    uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart2));
+    if (!device_is_ready(uart_dev)) {
+        printk("USART1 not ready\n");
+        return;
+    }
+
+    uart_irq_callback_user_data_set(uart_dev, uart2_irq_handler, NULL);
+    uart_irq_rx_enable(uart_dev);
 
     k_mutex_init(&latest_mtx);
 
@@ -213,6 +243,7 @@ static void sensor_entry(void *a, void *b, void *c                              
     bool si_ok = (si7021_init() == 0);
 
     while (1) {
+        printk("Working!\n");
         k_mutex_lock(&enable_mtx, K_FOREVER);
         while (!enabled) {
             k_condvar_wait(&enable_cv, &enable_mtx, K_FOREVER);
@@ -231,6 +262,15 @@ static void sensor_entry(void *a, void *b, void *c                              
         if (si_ok) {
             if (si7021_read_rh_raw(&rh_raw) < 0) { rh_raw = 0; }
             if (si7021_read_temp_raw(&temp_raw) < 0) { temp_raw = 0; }
+        }
+
+        if (rx_buf_pos > 0) {
+            printk("Received (%d bytes): ", rx_buf_pos);
+            for (size_t i=0; i < rx_buf_pos ; i++) {
+                printk("%c", rx_buf[i]);
+            }
+            printk("\n");
+            rx_buf_pos = 0;
         }
 
         k_mutex_lock(&latest_mtx, K_FOREVER);
