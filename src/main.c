@@ -223,26 +223,8 @@ int main(void)
                 float soil_pct = (msg.soil_raw * 100.0f) / 4095.0f;
                 if (soil_pct < 0.0f)   soil_pct = 0.0f; //Wet
                 if (soil_pct > 100.0f) soil_pct = 100.0f; //Dry
-                
-                float sens_g = 4096.0f; /* ±2g default */
-                if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
-                else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
-                float ax_g = msg.ax_raw / sens_g;
-                float ay_g = msg.ay_raw / sens_g;
-                float az_g = msg.az_raw / sens_g;
-
-                float rh = 0.0, tc = 0.0;
-                if (msg.rh_raw != 0) {
-                    rh = (125.0 * msg.rh_raw / 65536.0) - 6.0;
-                    if (rh < 0.0) { rh = 0.0; }
-                    if (rh > 100.0) { rh = 100.0; }
-                }
-                if (msg.temp_raw != 0) {
-                    tc = (175.72 * msg.temp_raw / 65536.0) - 46.85;
-                }
 
                 uint8_t R = 0, G = 0, B = 0;
-
                 if (msg.clr_raw > 0) {
                     uint32_t r_scaled = (uint32_t)msg.red_raw * 255u;
                     uint32_t g_scaled = (uint32_t)msg.grn_raw * 255u;
