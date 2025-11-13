@@ -373,7 +373,6 @@ int main(void)
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_TEST_SLEEP_TIME / 1000));
-                    /* You typically don’t need hourly stats in TEST, but we leave it as is */
                     sensor_thread_set_sleep_time(MODE_TEST_SLEEP_TIME);
                 }
             }
@@ -492,7 +491,7 @@ int main(void)
         } // end if(read_ticker_event)
 
         // ------------------------------
-        // Hourly statistics: independent of read_ticker_event
+        // Hourly statistics
         // ------------------------------
         if (hourly_stats_event) {
             hourly_stats_event = false;
