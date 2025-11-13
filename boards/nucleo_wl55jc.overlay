@@ -66,18 +66,11 @@
     adc1_in0_pa0: adc1_in0_pa0 {
         pinmux = <STM32_PINMUX('A', 0, ANALOG)>;
     };
-    usart2_tx_pb6: usart2_tx_pb6 {
-		pinmux = <STM32_PINMUX('B', 6, AF7)>; /* USART2_TX */
-	};
-
-	usart2_rx_pb7: usart2_rx_pb7 {
-		pinmux = <STM32_PINMUX('B', 7, AF7)>; /* USART2_RX */
-	};
 };
 
-&usart2 {
-	pinctrl-0 = <&usart2_tx_pb6 &usart2_rx_pb7>;
-	pinctrl-names = "default";
-	current-speed = <9600>;
-	status = "okay";
+&usart1 {
+    status = "okay";
+    current-speed = <9600>;
+    pinctrl-0 = <&usart1_rx_pa10>;
+    pinctrl-names = "default";
 };
