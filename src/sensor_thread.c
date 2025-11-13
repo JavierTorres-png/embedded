@@ -93,19 +93,14 @@ static volatile bool latest_gga_valid = false;
 static struct sensor_msg latest;
 static struct k_mutex latest_mtx;
 
-static bool enabled = false;
-static struct k_mutex  enable_mtx;
-static struct k_condvar enable_cv;
+static uint16_t sleep_time = -1;
+static struct k_mutex  time_mtx;
 
-void sensor_thread_set_enabled(bool en)
+void sensor_thread_set_sleep_time(uint16_t time)
 {
-    k_mutex_lock(&enable_mtx, K_FOREVER);
-    bool was = enabled;
-    enabled = en;
-    if (en && !was) {
-        k_condvar_signal(&enable_cv);
-    }
-    k_mutex_unlock(&enable_mtx);
+    k_mutex_lock(&time_mtx, K_FOREVER);
+    sleep_time = time;
+    k_mutex_unlock(&time_mtx);
 }
 
 bool sensor_thread_try_get(struct sensor_msg *out)
@@ -397,12 +392,6 @@ static void sensor_entry(void *a, void *b, void *c)
     bool tcs_ok   = (tcs_init() == 0);
 
     while (1) {
-        k_mutex_lock(&enable_mtx, K_FOREVER);
-        while (!enabled) {
-            k_condvar_wait(&enable_cv, &enable_mtx, K_FOREVER);
-        }
-        k_mutex_unlock(&enable_mtx);
-        
         int16_t light_raw = 0;
         int16_t soil_raw  = 0;
 
@@ -448,15 +437,17 @@ static void sensor_entry(void *a, void *b, void *c)
 
         k_mutex_unlock(&latest_mtx);
 
-        k_msleep(2000);
+        k_mutex_lock(&time_mtx, K_FOREVER);
+        uint16_t sleepTime = sleep_time;
+        k_mutex_unlock(&time_mtx);
+        k_msleep(sleepTime);
     }
 }
 
 void sensor_thread_start(void)
 {
-    k_mutex_init(&enable_mtx);
-    k_condvar_init(&enable_cv);
-    enabled = false;
+    k_mutex_init(&time_mtx);
+    sleep_time = 2000;
 
     k_thread_create(&sensor_thr, sensor_stack, SENSOR_STACK_SZ,
                     sensor_entry, NULL, NULL, NULL,
