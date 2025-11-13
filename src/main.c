@@ -18,6 +18,33 @@
 
 #define LIGHT_SENSITIVITY 4
 
+/* --- Fixed limits for plant monitoring --- */
+#define TEMP_MIN_C      -10.0f
+#define TEMP_MAX_C      50.0f
+
+#define RH_MIN_PCT      25.0f
+#define RH_MAX_PCT      75.0f
+
+#define LIGHT_MIN_PCT   20.0f
+#define LIGHT_MAX_PCT   90.0f
+
+#define SOIL_MIN_PCT    30.0f
+#define SOIL_MAX_PCT    80.0f
+
+#define COLOR_CLEAR_MIN 1u
+
+/* abs(accel) < 15 m/s² on each axis → considered OK */
+#define ACC_ABS_MAX     15.0f
+
+#define LED_PATTERN_OFF          0x0   /* all off */
+
+#define LED_PATTERN_TEMP_ERR     0x4   /* Red        – temperature */
+#define LED_PATTERN_RH_ERR       0x1   /* Blue       – humidity */
+#define LED_PATTERN_LIGHT_ERR    0x2   /* Green      – ambient light */
+#define LED_PATTERN_SOIL_ERR     0x6   /* Yellow (R+G)  – soil moisture */
+#define LED_PATTERN_COLOR_ERR    0x5   /* Magenta (R+B) – colour sensor */
+#define LED_PATTERN_ACCEL_ERR    0x3   /* Cyan (G+B)    – acceleration */
+
 static const struct gpio_dt_spec ledBlue = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios);
 static const struct gpio_dt_spec ledRed = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec ledGreen = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
@@ -380,7 +407,7 @@ int main(void)
                     k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
-                                  K_SECONDS(MODE_NORMAL_SLEEP_TIME / 1000));
+                                  K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&hourly_stats_timer,
                                   K_MINUTES(1),
                                   K_MINUTES(1));
@@ -393,7 +420,7 @@ int main(void)
                     k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
-                                  K_SECONDS(MODE_TEST_SLEEP_TIME / 1000));
+                                  K_SECONDS(MODE_TEST_SLEEP_TIME));
                 }
             }
         }
@@ -402,17 +429,11 @@ int main(void)
         // Read sensor only when ticker fires
         // ------------------------------
         if (read_ticker_event) {
-            read_ticker_event = false;
 
             struct sensor_msg msg;
             if (sensor_thread_try_get(&msg)) {
                 /* ---- Compute all values from this sample ---- */
-
-                float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
-                float light_pct = (scaled_raw <= 0)   ? 0.0f :
-                                  (scaled_raw >= 4095)? 100.0f :
-                                  (scaled_raw * 100.0f) / 4095.0f;
-
+                read_ticker_event = false;
                 float sens_g = 4096.0f; /* ±2g default */
                 if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
                 else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
@@ -421,23 +442,7 @@ int main(void)
                 float ay_g = 9.807f * msg.ay_raw / sens_g;
                 float az_g = 9.807f * msg.az_raw / sens_g;
 
-                float rh = 0.0f, tc = 0.0f;
-                if (msg.rh_raw != 0) {
-                    rh = (125.0f * msg.rh_raw / 65536.0f) - 6.0f;
-                    if (rh < 0.0f)   rh = 0.0f;
-                    if (rh > 100.0f) rh = 100.0f;
-                }
-                bool rh_in_range = (rh >= 25.0f) && (rh <= 75.0f);
-
-                if (msg.temp_raw != 0) {
-                    tc = (175.72f * msg.temp_raw / 65536.0f) - 46.85f;
-                }
-                bool temp_in_range = (tc >= -10.0f) && (tc <= 50.0f);
-
-                float soil_pct = (msg.soil_raw * 100.0f) / 4095.0f;
-                if (soil_pct < 0.0f)   soil_pct = 0.0f;  // Wet
-                if (soil_pct > 100.0f) soil_pct = 100.0f; // Dry
-
+                
                 /* ---- COLOR: dominant + LED pattern ---- */
                 uint8_t R = 0, G = 0, B = 0;
                 const char *dominant = "";
@@ -465,6 +470,29 @@ int main(void)
                         dom_blue_count++;
                     }
                 }
+                
+                float soil_pct = (msg.soil_raw * 100.0f) / 4095.0f;
+                if (soil_pct < 0.0f)   soil_pct = 0.0f;  // Wet
+                if (soil_pct > 100.0f) soil_pct = 100.0f; // Dry
+
+                float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
+                float light_pct = (scaled_raw <= 0)   ? 0.0f :
+                                  (scaled_raw >= 4095)? 100.0f :
+                                  (scaled_raw * 100.0f) / 4095.0f;
+
+                float rh = 0.0f, tc = 0.0f;
+                if (msg.rh_raw != 0) {
+                    rh = (125.0f * msg.rh_raw / 65536.0f) - 6.0f;
+                    if (rh < 0.0f)   rh = 0.0f;
+                    if (rh > 100.0f) rh = 100.0f;
+                }
+                bool rh_in_range = (rh > RH_MIN_PCT) && (rh < RH_MAX_PCT);
+
+                if (msg.temp_raw != 0) {
+                    tc = (175.72f * msg.temp_raw / 65536.0f) - 46.85f;
+                }
+                bool temp_in_range = (tc > TEMP_MIN_C) && (tc < TEMP_MAX_C);
+
 
                 /* ---- NM3 / NM5: update stats ONLY for printed samples ---- */
 
@@ -481,9 +509,45 @@ int main(void)
                 add_axis_sample(&ay_stats, (double)ay_g);
                 add_axis_sample(&az_stats, (double)az_g);
 
-                /* ---- LED bus output ---- */
-                bus_out_write(&my_bus_out, count);
 
+                bool light_in_range = (light_pct > LIGHT_MIN_PCT &&
+                                       light_pct < LIGHT_MAX_PCT);
+
+                bool soil_in_range  = (soil_pct > SOIL_MIN_PCT &&
+                                       soil_pct < SOIL_MAX_PCT);
+
+                bool color_ok       = (msg.clr_raw > COLOR_CLEAR_MIN);
+
+                bool accel_in_range = (ax_g < ACC_ABS_MAX && ax_g > -ACC_ABS_MAX &&
+                                       ay_g < ACC_ABS_MAX && ay_g > -ACC_ABS_MAX &&
+                                       az_g < ACC_ABS_MAX && az_g > -ACC_ABS_MAX);
+
+                uint8_t led_pattern =LED_PATTERN_OFF;
+
+                /* ---- LED bus output ---- */
+                if (mode == MODE_TEST) {
+                    /* TEST mode: show dominant colour */
+                    led_pattern = count;
+                } else {
+                    /* NORMAL mode: alert with different colour per parameter */
+                    if (!temp_in_range) {
+                        led_pattern = LED_PATTERN_TEMP_ERR;
+                    } else if (!rh_in_range) {
+                        led_pattern = LED_PATTERN_RH_ERR;
+                    } else if (!light_in_range) {
+                        led_pattern = LED_PATTERN_LIGHT_ERR;
+                    } else if (!soil_in_range) {
+                        led_pattern = LED_PATTERN_SOIL_ERR;
+                    } else if (!color_ok) {
+                        led_pattern = LED_PATTERN_COLOR_ERR;
+                    } else if (!accel_in_range) {
+                        led_pattern = LED_PATTERN_ACCEL_ERR;
+                    } else {
+                        led_pattern = LED_PATTERN_OFF;   /* everything OK */
+                    }
+                }
+
+                bus_out_write(&my_bus_out, led_pattern);
                 /* ---- Print this sample ---- */
                 printk("SOIL MOISTURE: %.1f%%\n", (double)soil_pct);
                 printk("LIGHT: %.2f%%\n", (double)light_pct);

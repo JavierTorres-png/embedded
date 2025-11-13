@@ -52,8 +52,8 @@ static const struct i2c_dt_spec si7021 = {
 
 /* ---- Essential registers ---- */
 #define TCS_ENABLE         0x00
-#define  TCS_EN_PON        0x01  /* power on        */
-#define  TCS_EN_AEN        0x02  /* ADC enable      */
+#define TCS_EN_PON        0x01  /* power on        */
+#define TCS_EN_AEN        0x02  /* ADC enable      */
 
 #define TCS_ATIME          0x01  /* integration time */
 #define TCS_CONTROL        0x0F  /* gain control     */
@@ -71,6 +71,8 @@ static const struct i2c_dt_spec si7021 = {
 /* ---- Basic config options ---- */
 #define TCS_ATIME_154MS    0xC0  /* ~154 ms integration time */
 #define TCS_GAIN_4X        0x01  /* 4x gain (good default)   */
+
+bool finished = false;
 
 static const struct gpio_dt_spec rgb_led = GPIO_DT_SPEC_GET(DT_ALIAS(rgbled), gpios);
 
@@ -108,7 +110,12 @@ bool sensor_thread_try_get(struct sensor_msg *out)
 {
     if (!out) return false;
     k_mutex_lock(&latest_mtx, K_FOREVER);
+    if(!finished) {
+        k_mutex_unlock(&latest_mtx);
+        return false;
+    }
     *out = latest;
+    finished = false;
     k_mutex_unlock(&latest_mtx);
     return true;
 }
@@ -435,6 +442,8 @@ static void sensor_entry(void *a, void *b, void *c)
         } else {
             latest.gps_sentence[0] = '\0';
         }
+
+        finished = true;
         k_mutex_unlock(&latest_mtx);
 
         k_mutex_lock(&enable_mtx, K_FOREVER);
