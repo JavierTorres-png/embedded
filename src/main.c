@@ -34,7 +34,7 @@ struct bus_out {
 };
 
 struct bus_out my_bus_out = {
-    .pins = {
+    .pins = {   
         ledBlue,
         ledGreen,
         ledRed,
@@ -95,6 +95,91 @@ int bus_out_write (struct bus_out *bus, int8_t value)
 
     }
     return 0;
+}
+
+// Convert NMEA (DDMM.MMMM) to decimal degrees
+static float nmea_to_degrees(const char *nmea, char dir)
+{
+    if (!nmea || strlen(nmea) < 4) return 0.0f;
+
+    float value = 0.0f;
+    int degrees = 0;
+    float minutes = 0.0f;
+
+    // Convert string to number
+    for (int i = 0; nmea[i]; i++) {
+        if (nmea[i] >= '0' && nmea[i] <= '9') {
+            value = value * 10 + (nmea[i] - '0');
+        } else if (nmea[i] == '.') {
+            float decimal = 0.0f;
+            float divisor = 10.0f;
+            for (int j = i + 1; nmea[j] >= '0' && nmea[j] <= '9'; j++) {
+                decimal += (nmea[j] - '0') / divisor;
+                divisor *= 10.0f;
+            }
+            value += decimal;
+            break;
+        }
+    }
+
+    degrees = (int)(value / 100);
+    minutes = value - (degrees * 100);
+
+    float result = degrees + (minutes / 60.0f);
+
+    if (dir == 'S' || dir == 'W') {
+        result = -result;
+    }
+    return result;
+}
+
+// Parse & print GPS info from a raw GGA sentence
+static void gps_print_from_sentence(const char *sentence)
+{
+    if (!sentence || sentence[0] == '\0') {
+        printk("GPS: no data\n");
+        return;
+    }
+
+    // Work on a local copy because we will modify it
+    char line[GPS_SENTENCE_MAX];
+    strncpy(line, sentence, sizeof(line));
+    line[sizeof(line) - 1] = '\0';
+
+    char *p = line;
+    int field = 0;
+    char *fields[15] = {0};
+
+    // Split by commas
+    fields[field++] = p;
+    while (*p && field < 15) {
+        if (*p == ',') {
+            *p = '\0';
+            fields[field++] = p + 1;
+        }
+        p++;
+    }
+
+    // GGA: $GPGGA, time, lat, N/S, lon, E/W, fix, sats, HDOP, alt, ...
+    if (fields[1] && fields[2] && fields[3] && fields[4] && fields[5] && fields[9]) {
+        float lat = nmea_to_degrees(fields[2], fields[3][0]);
+        float lon = nmea_to_degrees(fields[4], fields[5][0]);
+
+        printk("GPS:\n");
+        printk("\tTime: %c%c:%c%c:%c%c\n",
+               fields[1][0], fields[1][1],
+               fields[1][2], fields[1][3],
+               fields[1][4], fields[1][5]);
+
+        printk("\tLat: %.6f° %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
+        printk("\tLon: %.6f° %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
+        printk("\tAlt: %s m\n", fields[9]);
+        if (fields[7]) {
+            printk("\tSatellites: %s\n", fields[7]);
+        }
+    } else {
+        printk("GPS: incomplete GGA sentence\n");
+    }
 }
 
 int main(void)
@@ -193,15 +278,7 @@ int main(void)
                 float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
                 float light_pct = (scaled_raw <= 0)   ? 0.0f :
                 (scaled_raw >= 4095)? 100.0f :
-                (scaled_raw * 100.0f) / 4095.0f;
-                
-                if (light_pct < 33.0f) {
-                    count = 4;        // Red
-                } else if (light_pct <= 66.0f) {
-                    count = 6;        // Yellow (Red+Green)
-                } else {
-                    count = 2;        // Green
-                }
+                (scaled_raw * 100.0f) / 4095.0f;         
 
                 float sens_g = 4096.0f; /* ±2g default */
                 if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
@@ -233,6 +310,14 @@ int main(void)
                     R = (uint8_t)(r_scaled / (uint32_t)msg.clr_raw);
                     G = (uint8_t)(g_scaled / (uint32_t)msg.clr_raw);
                     B = (uint8_t)(b_scaled / (uint32_t)msg.clr_raw);
+
+                    if (R >= G && R >= B) {
+                        count = 4;   // Red dominant
+                    } else if (G >= R && G >= B) {
+                        count = 2;   // Green dominant
+                    } else {
+                        count = 1;   // Blue dominant
+                    }
                 }
                 if (read_ticker_event) {
                     read_ticker_event = false;
@@ -242,6 +327,8 @@ int main(void)
                     printk("COLOR SENSOR: \n");
                     printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n", ax_g, ay_g, az_g);
                     printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n", tc, rh);
+
+                    gps_print_from_sentence(msg.gps_sentence);
                 }
 
             }

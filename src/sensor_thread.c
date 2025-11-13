@@ -86,6 +86,9 @@ static const struct device *uart_dev;
 static char nmea_line[BUF_SIZE];
 static uint8_t line_pos = 0;
 
+static char latest_gga[BUF_SIZE];
+static volatile bool latest_gga_valid = false;
+
 
 static struct sensor_msg latest;
 static struct k_mutex latest_mtx;
@@ -325,106 +328,35 @@ static int tcs_read_crgb_led(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
     return 0;
 }
 
-// ------------------------------- START GPS CODE
-
-// Convertir NMEA (DDMM.MMMM) en degrés décimaux
-static float nmea_to_degrees(const char *nmea, char dir)
-{
-    if (!nmea || strlen(nmea) < 4) return 0.0f;
-    
-    float value = 0.0f;
-    int degrees = 0;
-    float minutes = 0.0f;
-    
-    // Convertir la chaîne en nombre
-    for (int i = 0; nmea[i]; i++) {
-        if (nmea[i] >= '0' && nmea[i] <= '9') {
-            value = value * 10 + (nmea[i] - '0');
-        } else if (nmea[i] == '.') {
-            // Lire les décimales
-            float decimal = 0.0f;
-            float divisor = 10.0f;
-            for (int j = i + 1; nmea[j] >= '0' && nmea[j] <= '9'; j++) {
-                decimal += (nmea[j] - '0') / divisor;
-                divisor *= 10.0f;
-            }
-            value += decimal;
-            break;
-        }
-    }
-    
-    // Séparer degrés et minutes
-    if (dir == 'N' || dir == 'S') {
-        degrees = (int)(value / 100);
-        minutes = value - (degrees * 100);
-    } else {
-        degrees = (int)(value / 100);
-        minutes = value - (degrees * 100);
-    }
-    
-    float result = degrees + (minutes / 60.0f);
-    
-    // Négatif si Sud ou Ouest
-    if (dir == 'S' || dir == 'W') {
-        result = -result;
-    }
-    
-    return result;
-}
-
-// Fonction simple pour afficher les infos importantes
-static void print_gps_info(char *line)
-{
-    char *p = line;
-    int field = 0;
-    char *fields[15] = {0};
-    
-    // Découper la ligne en champs
-    while (*p && field < 15) {
-        if (*p == ',') {
-            *p = '\0';
-            fields[field++] = line;
-            line = p + 1;
-        }
-        p++;
-    }
-    
-    // Afficher : Heure | Position en degrés | Altitude | Satellites | HDOP
-    if (fields[1] && fields[2] && fields[4] && fields[9]) {
-        float lat = nmea_to_degrees(fields[2], fields[3][0]);
-        float lon = nmea_to_degrees(fields[4], fields[5][0]);
-        
-        printk("%c%c:%c%c:%c%c | %.6f° %c, %.6f° %c | Alt: %s m | Sats: %s\n",
-               fields[1][0], fields[1][1], fields[1][2], 
-               fields[1][3], fields[1][4], fields[1][5],
-               lat >= 0 ? lat : -lat, fields[3][0],  // Latitude
-               lon >= 0 ? lon : -lon, fields[5][0],  // Longitude
-               fields[9],             // Altitude
-               fields[7]);             // Satellites
-    }
-}
-
-static void uart_isr(const struct device *dev, void *user_data)
+static void gps_uart_isr(const struct device *dev, void *user_data)
 {
     uint8_t c;
-    
+
     while (uart_irq_update(dev) && uart_irq_rx_ready(dev)) {
         if (uart_fifo_read(dev, &c, 1) == 1) {
+
+            /* Start of a new NMEA sentence */
             if (c == '$') {
                 line_pos = 0;
             }
-            
+
             if (line_pos < BUF_SIZE - 1) {
                 nmea_line[line_pos++] = c;
-                
+
                 if (c == '\n') {
                     nmea_line[line_pos] = '\0';
-                    
-                    // Affichage direct des trames GPGGA
+
+                    /* Only keep $GPGGA / $GNGGA, as before */
                     if (strstr(nmea_line, "$GPGGA") || strstr(nmea_line, "$GNGGA")) {
-                        print_gps_info(nmea_line);
+                        size_t len = strlen(nmea_line);
+                        if (len >= BUF_SIZE) {
+                            len = BUF_SIZE - 1;
+                        }
+                        memcpy(latest_gga, nmea_line, len);
+                        latest_gga[len] = '\0';
+                        latest_gga_valid = true;
                     }
-                    
+
                     line_pos = 0;
                 }
             }
@@ -432,7 +364,6 @@ static void uart_isr(const struct device *dev, void *user_data)
     }
 }
 
-// ------------------------------- END GPS FUNCTIONS
 
 static void sensor_entry(void *a, void *b, void *c)
 {
@@ -445,10 +376,10 @@ static void sensor_entry(void *a, void *b, void *c)
     uart_dev = DEVICE_DT_GET(UART1_NODE);
     if (!device_is_ready(uart_dev)) {
         printk("UART not ready\n");
-        return -1;
+        return;
     }
 
-    uart_irq_callback_set(uart_dev, uart_isr);
+    uart_irq_callback_set(uart_dev, gps_uart_isr);
     uart_irq_rx_enable(uart_dev);
 
     ret = adc_channel_setup(adc_dev, &channel_cfg_soil);
@@ -456,15 +387,6 @@ static void sensor_entry(void *a, void *b, void *c)
         printk("ADC soil channel setup failed: %d\n", ret);
         return;
     }
-
-    uart_dev = DEVICE_DT_GET(UART1_NODE);
-    if (!device_is_ready(uart_dev)) {
-        printk("UART not ready\n");
-        return -1;
-    }
-
-    uart_irq_callback_set(uart_dev, uart_isr);
-    uart_irq_rx_enable(uart_dev);
 
     k_mutex_init(&latest_mtx);
 
@@ -516,6 +438,14 @@ static void sensor_entry(void *a, void *b, void *c)
         latest.grn_raw     = g_raw;
         latest.blu_raw     = b_raw;
         latest.soil_raw    = soil_raw;
+
+        if (latest_gga_valid) {
+            strncpy(latest.gps_sentence, latest_gga, sizeof(latest.gps_sentence));
+            latest.gps_sentence[sizeof(latest.gps_sentence) - 1] = '\0';
+        } else {
+            latest.gps_sentence[0] = '\0';
+        }
+
         k_mutex_unlock(&latest_mtx);
 
         k_msleep(2000);
