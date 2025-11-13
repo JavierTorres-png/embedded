@@ -5,7 +5,10 @@
         led1 = &led_g;
         led2 = &led_b;
         sw0  = &user_button_3;
+        rgbled = &rgb_led_ctrl;
     };
+
+
 
     leds {
         compatible = "gpio-leds";
@@ -23,18 +26,31 @@
             gpios = <&gpiob 10 GPIO_ACTIVE_LOW>;  /* D6 = PB10 */
             label = "LED Blue";
         };
+        rgb_led_ctrl: rgb_led_ctrl {
+            gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
+            label = "LED TCS";
+        };
+
     };
 };
 
 &adc1 {
     status = "okay";
-    pinctrl-0 = <&adc1_in0_pa0>;
+    pinctrl-0 = <&adc1_in0_pa0 &adc1_in1_pa1>;
     pinctrl-names = "default";
     #address-cells = <1>;
     #size-cells = <0>;
 
     channel@0 {
         reg = <0>;
+        zephyr,gain = "ADC_GAIN_1";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+        zephyr,resolution = <12>;
+    };
+
+    channel@1 {
+        reg = <1>;
         zephyr,gain = "ADC_GAIN_1";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -60,11 +76,27 @@
         status = "okay";
     };
 
+    tcs34725@29 {
+        compatible = "ams,tcs34725";
+        reg = <0x29>;
+        status = "okay";
+    };
+
+};
+
+&usart1 {
+    status = "okay";
+    current-speed = <9600>;
+    pinctrl-0 = <&usart1_rx_pa10>;
+    pinctrl-names = "default";
 };
 
 &pinctrl {
     adc1_in0_pa0: adc1_in0_pa0 {
         pinmux = <STM32_PINMUX('A', 0, ANALOG)>;
+    };
+    adc1_in1_pa1: adc1_in1_pa1 {
+        pinmux = <STM32_PINMUX('A', 1, ANALOG)>;
     };
 };
 
