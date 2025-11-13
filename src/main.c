@@ -23,6 +23,7 @@ static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios)
 
 static volatile bool isr_btn_event = false;
 static volatile bool long_press_timeout = false;
+static volatile bool read_ticker_event = false;
 static bool short_press = false;
 
 static int8_t mode = MODE_NORMAL;
@@ -48,6 +49,12 @@ void timeout_handler(struct k_timer *timer_id) {
     long_press_timeout = true;
 }
 K_TIMER_DEFINE(my_timeout, timeout_handler, NULL);
+
+void ticker_handler(struct k_timer *timer_id) {
+    ARG_UNUSED(timer_id);
+    read_ticker_event = true;
+}
+K_TIMER_DEFINE(read_ticker, ticker_handler, NULL);
 
 static void button_isr (const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     ARG_UNUSED(dev);
@@ -141,6 +148,7 @@ int main(void)
 
     sensor_thread_set_enabled(true);  
 
+    k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(2));
 
     // LED related variables
     int8_t count = 0;
@@ -182,36 +190,44 @@ int main(void)
         if (mode == MODE_NORMAL) {
             struct sensor_msg msg;
             if (sensor_thread_try_get(&msg)) {
-            float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
-            float light_pct = (scaled_raw <= 0)   ? 0.0f :
-            (scaled_raw >= 4095)? 100.0f :
-            (scaled_raw * 100.0f) / 4095.0f;
-            
-            if (light_pct < 33.0f) {
-                count = 4;        // Red
-            } else if (light_pct <= 66.0f) {
-                count = 6;        // Yellow (Red+Green)
-            } else {
-                count = 2;        // Green
-            }
+                float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
+                float light_pct = (scaled_raw <= 0)   ? 0.0f :
+                (scaled_raw >= 4095)? 100.0f :
+                (scaled_raw * 100.0f) / 4095.0f;
+                
+                if (light_pct < 33.0f) {
+                    count = 4;        // Red
+                } else if (light_pct <= 66.0f) {
+                    count = 6;        // Yellow (Red+Green)
+                } else {
+                    count = 2;        // Green
+                }
 
-            float sens_g = 4096.0f; /* ±2g default */
-            if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
-            else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
-            float ax_g = msg.ax_raw / sens_g;
-            float ay_g = msg.ay_raw / sens_g;
-            float az_g = msg.az_raw / sens_g;
+                float sens_g = 4096.0f; /* ±2g default */
+                if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
+                else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
+                float ax_g = msg.ax_raw / sens_g;
+                float ay_g = msg.ay_raw / sens_g;
+                float az_g = msg.az_raw / sens_g;
 
-            float rh = 0.0, tc = 0.0;
-            if (msg.rh_raw != 0) {
-                rh = (125.0 * msg.rh_raw / 65536.0) - 6.0;
-                if (rh < 0.0) { rh = 0.0; }
-                if (rh > 100.0) { rh = 100.0; }
-            }
-            if (msg.temp_raw != 0) {
-                tc = (175.72 * msg.temp_raw / 65536.0) - 46.85;
-            }
-
+                float rh = 0.0, tc = 0.0;
+                if (msg.rh_raw != 0) {
+                    rh = (125.0 * msg.rh_raw / 65536.0) - 6.0;
+                    if (rh < 0.0) { rh = 0.0; }
+                    if (rh > 100.0) { rh = 100.0; }
+                }
+                if (msg.temp_raw != 0) {
+                    tc = (175.72 * msg.temp_raw / 65536.0) - 46.85;
+                }
+                if (read_ticker_event) {
+                    read_ticker_event = false;
+                    printk("SOIL MOISTURE: \n");
+                    printk("LIGHT: %.2f%%\n", light_pct);
+                    printk("GPS: \n");
+                    printk("COLOR SENSOR: \n");
+                    printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n", ax_g, ay_g, az_g);
+                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n", tc, rh);
+                }
             }
         } else { // Always MODE_BLUE here
             count = 1;
