@@ -93,14 +93,16 @@ static volatile bool latest_gga_valid = false;
 static struct sensor_msg latest;
 static struct k_mutex latest_mtx;
 
-static uint16_t sleep_time = -1;
+static struct k_mutex enable_mtx;
 static struct k_mutex  time_mtx;
+static struct k_condvar enable_cv;
 
-void sensor_thread_set_sleep_time(uint16_t time)
+void sensor_thread_measure()
 {
-    k_mutex_lock(&time_mtx, K_FOREVER);
-    sleep_time = time;
-    k_mutex_unlock(&time_mtx);
+    printk("WAKE UP\n\n");
+    k_mutex_lock(&enable_mtx, K_FOREVER);
+    k_condvar_signal(&enable_cv);
+    k_mutex_unlock(&enable_mtx);
 }
 
 bool sensor_thread_try_get(struct sensor_msg *out)
@@ -434,20 +436,20 @@ static void sensor_entry(void *a, void *b, void *c)
         } else {
             latest.gps_sentence[0] = '\0';
         }
-
         k_mutex_unlock(&latest_mtx);
 
-        k_mutex_lock(&time_mtx, K_FOREVER);
-        uint16_t sleepTime = sleep_time;
-        k_mutex_unlock(&time_mtx);
-        k_msleep(sleepTime);
+        k_mutex_lock(&enable_mtx, K_FOREVER);
+        k_condvar_wait(&enable_cv, &enable_mtx, K_FOREVER);
+        k_mutex_unlock(&enable_mtx);
+
     }
 }
 
 void sensor_thread_start(void)
 {
     k_mutex_init(&time_mtx);
-    sleep_time = 2000;
+    k_mutex_init(&enable_mtx);
+    k_condvar_init(&enable_cv);
 
     k_thread_create(&sensor_thr, sensor_stack, SENSOR_STACK_SZ,
                     sensor_entry, NULL, NULL, NULL,

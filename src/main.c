@@ -13,8 +13,8 @@
 #define MODE_TEST 1
 #define MODE_NORMAL 2
 
-#define MODE_TEST_SLEEP_TIME 2000
-#define MODE_NORMAL_SLEEP_TIME 30000
+#define MODE_TEST_SLEEP_TIME 2
+#define MODE_NORMAL_SLEEP_TIME 30
 
 #define LIGHT_SENSITIVITY 5
 
@@ -26,8 +26,8 @@ static const struct gpio_dt_spec onboard_blue_led =GPIO_DT_SPEC_GET(DT_NODELABEL
 static const struct gpio_dt_spec onboard_green_led =GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_2), gpios);
 
 static volatile bool isr_btn_event = false;
-static volatile bool long_press_timeout = false;
 static volatile bool read_ticker_event = false;
+static volatile bool measure_ticker_event = false;
 //static bool short_press = false;
 
 static int8_t mode = MODE_TEST;
@@ -136,11 +136,18 @@ static struct gpio_callback button_cb;
 }
 K_TIMER_DEFINE(my_timeout, timeout_handler, NULL);*/
 
-void ticker_handler(struct k_timer *timer_id) {
+void read_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     read_ticker_event = true;
 }
-K_TIMER_DEFINE(read_ticker, ticker_handler, NULL);
+K_TIMER_DEFINE(read_ticker, read_ticker_handler, NULL);
+
+void measure_ticker_handler(struct k_timer *timer_id) {
+    ARG_UNUSED(timer_id);
+    measure_ticker_event = true;
+}
+K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);
+
 
 static void button_isr (const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     ARG_UNUSED(dev);
@@ -325,10 +332,8 @@ int main(void)
     }
 
     sensor_thread_start();
-
-    sensor_thread_set_sleep_time(MODE_TEST_SLEEP_TIME);  
-
-    k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(2));
+    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
+    k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(MODE_TEST_SLEEP_TIME));
 
     gpio_pin_set_dt(&onboard_blue_led, 1);
 
@@ -351,7 +356,10 @@ int main(void)
             k_msleep(10);
             continue;
         }*/
-        
+        if (measure_ticker_event) {
+            measure_ticker_event = false;
+            sensor_thread_measure();
+        }
         // User button related code
         if (isr_btn_event) {
             isr_btn_event = false;
@@ -366,16 +374,16 @@ int main(void)
                     printk("Mode Normal\n");
                     gpio_pin_set_dt(&onboard_blue_led, 0);
                     gpio_pin_set_dt(&onboard_green_led, 1);
-                    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME/1000));
+                    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&hourly_stats_timer, K_HOURS(0.0166), K_HOURS(1));
-                    sensor_thread_set_sleep_time(MODE_NORMAL_SLEEP_TIME);
+                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                 } else {
                     mode = MODE_TEST;
                     printk("Mode Test\n");
                     gpio_pin_set_dt(&onboard_blue_led, 1);
                     gpio_pin_set_dt(&onboard_green_led, 0);
-                    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME/1000));
-                    sensor_thread_set_sleep_time(MODE_TEST_SLEEP_TIME);  
+                    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
+                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
                 }
             }
         } // end (isr_btn_event)
