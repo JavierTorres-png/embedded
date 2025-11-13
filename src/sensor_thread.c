@@ -4,6 +4,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/uart.h>
 #include "sensor_thread.h"
 
 #define BUFFER_SIZE 1
@@ -45,6 +46,46 @@ static const struct i2c_dt_spec si7021 = {
     .addr = SI7021_ADDR,
 };
 
+/* ---- Device address ---- */
+#define TCS_ADDR           0x29
+#define TCS_CMD_BIT        0x80  /* command bit for register access */
+
+/* ---- Essential registers ---- */
+#define TCS_ENABLE         0x00
+#define  TCS_EN_PON        0x01  /* power on        */
+#define  TCS_EN_AEN        0x02  /* ADC enable      */
+
+#define TCS_ATIME          0x01  /* integration time */
+#define TCS_CONTROL        0x0F  /* gain control     */
+
+/* ---- 16-bit output registers (low,high) ---- */
+#define TCS_CDATAL         0x14
+#define TCS_CDATAH         0x15
+#define TCS_RDATAL         0x16
+#define TCS_RDATAH         0x17
+#define TCS_GDATAL         0x18
+#define TCS_GDATAH         0x19
+#define TCS_BDATAL         0x1A
+#define TCS_BDATAH         0x1B
+
+/* ---- Basic config options ---- */
+#define TCS_ATIME_154MS    0xC0  /* ~154 ms integration time */
+#define TCS_GAIN_4X        0x01  /* 4x gain (good default)   */
+
+static const struct gpio_dt_spec rgb_led = GPIO_DT_SPEC_GET(DT_ALIAS(rgbled), gpios);
+
+static const struct i2c_dt_spec tcs = {
+    .bus  = DEVICE_DT_GET(DT_NODELABEL(i2c1)),
+    .addr = TCS_ADDR,
+};
+
+#define UART1_NODE DT_NODELABEL(usart1)
+#define BUF_SIZE 128
+
+static const struct device *uart_dev;
+static char nmea_line[BUF_SIZE];
+static uint8_t line_pos = 0;
+
 
 static struct sensor_msg latest;
 static struct k_mutex latest_mtx;
@@ -75,14 +116,14 @@ bool sensor_thread_try_get(struct sensor_msg *out)
 
 static int16_t sample_buffer[BUFFER_SIZE];
 
-static struct adc_channel_cfg channel_cfg = {
+static struct adc_channel_cfg channel_cfg_light = {
     .gain = ADC_GAIN_1,
     .reference = ADC_REF_INTERNAL,
     .acquisition_time = ADC_ACQ_TIME_DEFAULT,
     .channel_id = 0,
 };
 
-int read_adc_raw (int16_t *raw_val)
+int read_adc_raw (uint8_t channel_id, int16_t *raw_val)
 {
     if (!device_is_ready(adc_dev)) {
         printk("Error: ADC device is not ready\n");
@@ -90,7 +131,7 @@ int read_adc_raw (int16_t *raw_val)
     }
 
     const struct adc_sequence sequence = {
-        .channels = BIT(0),
+        .channels = BIT(channel_id),
         .buffer = sample_buffer,
         .buffer_size = sizeof(sample_buffer),
         .resolution = 12,
@@ -105,6 +146,14 @@ int read_adc_raw (int16_t *raw_val)
     *raw_val = sample_buffer[0];
     return 0;
 }
+
+
+static struct adc_channel_cfg channel_cfg_soil = {
+    .gain = ADC_GAIN_1,
+    .reference = ADC_REF_INTERNAL,
+    .acquisition_time = ADC_ACQ_TIME_DEFAULT,
+    .channel_id = 1,   // PA1 – Soil moisture
+};
 
 static inline int mma_read(uint8_t reg, uint8_t *buf, size_t len) {
     return i2c_write_read_dt(&mma, &reg, 1, buf, len);
@@ -197,20 +246,224 @@ static int si7021_read_temp_raw(uint16_t *raw)
     return si7021_read16(raw);
 }
 
-
-static void sensor_entry(void *a, void *b, void *c                                                                                                                                                                                                                                                                                                                                                                                                )
+static inline int tcs_write8(uint8_t reg, uint8_t val)
 {
-    int8_t ret = adc_channel_setup(adc_dev, &channel_cfg);
+    uint8_t w[2] = { (uint8_t)(TCS_CMD_BIT | reg), val };
+    return i2c_write_dt(&tcs, w, sizeof(w));
+}
+
+static inline int tcs_read16(uint8_t reg_low, uint16_t *out)
+{
+    uint8_t r = (uint8_t)(TCS_CMD_BIT | reg_low);
+    uint8_t b[2];
+    int ret = i2c_write_read_dt(&tcs, &r, 1, b, 2);
+    if (ret < 0) return ret;
+    *out = (uint16_t)(b[0] | (b[1] << 8));
+    return 0;
+}
+
+static inline void tcs_led_on(void)
+{
+    if (device_is_ready(rgb_led.port)) {
+        gpio_pin_set_dt(&rgb_led, 1);
+    }
+}
+static inline void tcs_led_off(void)
+{
+    if (device_is_ready(rgb_led.port)) {
+        gpio_pin_set_dt(&rgb_led, 0);
+    }
+}
+
+static int tcs_init(void)
+{
+
+    if (!device_is_ready(rgb_led.port)) {
+        printk("TCS LED GPIO not ready\n");
+        return -ENODEV;
+    }
+
+    int ret = gpio_pin_configure_dt(&rgb_led, GPIO_OUTPUT_INACTIVE);
+    if (ret < 0) {
+        printk("Failed to configure TCS LED GPIO (%d)\n", ret);
+        return ret;
+    }
+
+    if (!device_is_ready(tcs.bus)) return -ENODEV;
+
+    /* Power on, then enable ADC */
+    if (tcs_write8(TCS_ENABLE, TCS_EN_PON) < 0) return -EIO;
+    k_msleep(3);
+    if (tcs_write8(TCS_ENABLE, TCS_EN_PON | TCS_EN_AEN) < 0) return -EIO;
+
+    /* Integration time + gain */
+    if (tcs_write8(TCS_ATIME,   TCS_ATIME_154MS) < 0) return -EIO;
+    if (tcs_write8(TCS_CONTROL, TCS_GAIN_4X)     < 0) return -EIO;
+
+    /* Wait at least 1 integration period before first read */
+    k_msleep(160);
+    return 0;
+}
+
+static int tcs_read_crgb_led(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
+{
+    tcs_led_on();
+    //k_msleep(10);  /* short settle time for LED */
+
+    int ret_c = tcs_read16(TCS_CDATAL, c);
+    int ret_r = tcs_read16(TCS_RDATAL, r);
+    int ret_g = tcs_read16(TCS_GDATAL, g);
+    int ret_b = tcs_read16(TCS_BDATAL, b);
+
+    if (ret_c < 0 || ret_r < 0 || ret_g < 0 || ret_b < 0) {
+        tcs_led_off();
+        return -EIO;
+    }
+
+    //tcs_led_off();
+
+    return 0;
+}
+
+// ------------------------------- START GPS CODE
+
+// Convertir NMEA (DDMM.MMMM) en degrés décimaux
+static float nmea_to_degrees(const char *nmea, char dir)
+{
+    if (!nmea || strlen(nmea) < 4) return 0.0f;
+    
+    float value = 0.0f;
+    int degrees = 0;
+    float minutes = 0.0f;
+    
+    // Convertir la chaîne en nombre
+    for (int i = 0; nmea[i]; i++) {
+        if (nmea[i] >= '0' && nmea[i] <= '9') {
+            value = value * 10 + (nmea[i] - '0');
+        } else if (nmea[i] == '.') {
+            // Lire les décimales
+            float decimal = 0.0f;
+            float divisor = 10.0f;
+            for (int j = i + 1; nmea[j] >= '0' && nmea[j] <= '9'; j++) {
+                decimal += (nmea[j] - '0') / divisor;
+                divisor *= 10.0f;
+            }
+            value += decimal;
+            break;
+        }
+    }
+    
+    // Séparer degrés et minutes
+    if (dir == 'N' || dir == 'S') {
+        degrees = (int)(value / 100);
+        minutes = value - (degrees * 100);
+    } else {
+        degrees = (int)(value / 100);
+        minutes = value - (degrees * 100);
+    }
+    
+    float result = degrees + (minutes / 60.0f);
+    
+    // Négatif si Sud ou Ouest
+    if (dir == 'S' || dir == 'W') {
+        result = -result;
+    }
+    
+    return result;
+}
+
+// Fonction simple pour afficher les infos importantes
+static void print_gps_info(char *line)
+{
+    char *p = line;
+    int field = 0;
+    char *fields[15] = {0};
+    
+    // Découper la ligne en champs
+    while (*p && field < 15) {
+        if (*p == ',') {
+            *p = '\0';
+            fields[field++] = line;
+            line = p + 1;
+        }
+        p++;
+    }
+    
+    // Afficher : Heure | Position en degrés | Altitude | Satellites | HDOP
+    if (fields[1] && fields[2] && fields[4] && fields[9]) {
+        float lat = nmea_to_degrees(fields[2], fields[3][0]);
+        float lon = nmea_to_degrees(fields[4], fields[5][0]);
+        
+        printk("%c%c:%c%c:%c%c | %.6f° %c, %.6f° %c | Alt: %s m | Sats: %s\n",
+               fields[1][0], fields[1][1], fields[1][2], 
+               fields[1][3], fields[1][4], fields[1][5],
+               lat >= 0 ? lat : -lat, fields[3][0],  // Latitude
+               lon >= 0 ? lon : -lon, fields[5][0],  // Longitude
+               fields[9],             // Altitude
+               fields[7]);             // Satellites
+    }
+}
+
+static void uart_isr(const struct device *dev, void *user_data)
+{
+    uint8_t c;
+    
+    while (uart_irq_update(dev) && uart_irq_rx_ready(dev)) {
+        if (uart_fifo_read(dev, &c, 1) == 1) {
+            if (c == '$') {
+                line_pos = 0;
+            }
+            
+            if (line_pos < BUF_SIZE - 1) {
+                nmea_line[line_pos++] = c;
+                
+                if (c == '\n') {
+                    nmea_line[line_pos] = '\0';
+                    
+                    // Affichage direct des trames GPGGA
+                    if (strstr(nmea_line, "$GPGGA") || strstr(nmea_line, "$GNGGA")) {
+                        print_gps_info(nmea_line);
+                    }
+                    
+                    line_pos = 0;
+                }
+            }
+        }
+    }
+}
+
+// ------------------------------- END GPS FUNCTIONS
+
+static void sensor_entry(void *a, void *b, void *c)
+{
+    int8_t ret = adc_channel_setup(adc_dev, &channel_cfg_light);
     if (ret < 0) {
         printk("ADC channel setup failed: %d\n", ret);
         return;
     }
+
+    ret = adc_channel_setup(adc_dev, &channel_cfg_soil);
+    if (ret < 0) {
+        printk("ADC soil channel setup failed: %d\n", ret);
+        return;
+    }
+
+    uart_dev = DEVICE_DT_GET(UART1_NODE);
+    if (!device_is_ready(uart_dev)) {
+        printk("UART not ready\n");
+        return -1;
+    }
+
+    uart_irq_callback_set(uart_dev, uart_isr);
+    uart_irq_rx_enable(uart_dev);
 
     k_mutex_init(&latest_mtx);
 
     bool accel_ok = (mma_init(&accel_range) == 0);
 
     bool si_ok = (si7021_init() == 0);
+
+    bool tcs_ok   = (tcs_init() == 0);
 
     while (1) {
         k_mutex_lock(&enable_mtx, K_FOREVER);
@@ -220,7 +473,10 @@ static void sensor_entry(void *a, void *b, void *c                              
         k_mutex_unlock(&enable_mtx);
         
         int16_t light_raw = 0;
-        (void)read_adc_raw(&light_raw);
+        int16_t soil_raw  = 0;
+
+        (void)read_adc_raw(0, &light_raw); // Channel 0 – LDR
+        (void)read_adc_raw(1, &soil_raw);  // Channel 1 – Soil moisture
 
         int16_t ax = 0, ay = 0, az = 0;
         if (accel_ok) {
@@ -233,6 +489,11 @@ static void sensor_entry(void *a, void *b, void *c                              
             if (si7021_read_temp_raw(&temp_raw) < 0) { temp_raw = 0; }
         }
 
+        uint16_t c_raw = 0, r_raw = 0, g_raw = 0, b_raw = 0;
+        if (tcs_ok) {
+            (void)tcs_read_crgb_led(&c_raw, &r_raw, &g_raw, &b_raw);
+        }
+
         k_mutex_lock(&latest_mtx, K_FOREVER);
         latest.light_raw   = light_raw;
         latest.ax_raw      = ax;
@@ -241,6 +502,11 @@ static void sensor_entry(void *a, void *b, void *c                              
         latest.accel_range = accel_range;
         latest.rh_raw      = rh_raw;
         latest.temp_raw    = temp_raw;
+        latest.clr_raw     = c_raw;
+        latest.red_raw     = r_raw;
+        latest.grn_raw     = g_raw;
+        latest.blu_raw     = b_raw;
+        latest.soil_raw    = soil_raw;
         k_mutex_unlock(&latest_mtx);
 
         k_msleep(2000);

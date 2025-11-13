@@ -8,6 +8,11 @@ struct sensor_msg {
     uint8_t accel_range;             /* 0: ±2g, 1: ±4g, 2: ±8g */
     uint16_t rh_raw;     /* raw humidity */
     uint16_t temp_raw;   /* raw temperature */
+    uint16_t clr_raw;                   /* Clear */
+    uint16_t red_raw;
+    uint16_t grn_raw;
+    uint16_t blu_raw;
+    int16_t soil_raw;
 };
 
 /* Start/stop + read of latest value */
