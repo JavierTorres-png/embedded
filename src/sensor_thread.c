@@ -441,6 +441,15 @@ static void sensor_entry(void *a, void *b, void *c)
         printk("ADC channel setup failed: %d\n", ret);
         return;
     }
+    
+    uart_dev = DEVICE_DT_GET(UART1_NODE);
+    if (!device_is_ready(uart_dev)) {
+        printk("UART not ready\n");
+        return -1;
+    }
+
+    uart_irq_callback_set(uart_dev, uart_isr);
+    uart_irq_rx_enable(uart_dev);
 
     ret = adc_channel_setup(adc_dev, &channel_cfg_soil);
     if (ret < 0) {
