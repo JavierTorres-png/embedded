@@ -99,7 +99,6 @@ static struct k_condvar enable_cv;
 
 void sensor_thread_measure()
 {
-    printk("WAKE UP\n\n");
     k_mutex_lock(&enable_mtx, K_FOREVER);
     k_condvar_signal(&enable_cv);
     k_mutex_unlock(&enable_mtx);
