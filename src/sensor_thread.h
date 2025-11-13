@@ -20,7 +20,7 @@ struct sensor_msg {
 
 /* Start/stop + read of latest value */
 void sensor_thread_start(void);
-void sensor_thread_set_sleep_time(uint16_t time);
+void sensor_thread_measure();
 bool sensor_thread_try_get(struct sensor_msg *out);
 
 #endif /* SENSOR_THREAD_H */
