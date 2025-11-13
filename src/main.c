@@ -14,7 +14,7 @@
 #define MODE_BLUE   2
 #define MODE_OFF    3
 
-#define LIGHT_SENSITIVITY 8
+#define LIGHT_SENSITIVITY 5
 
 static const struct gpio_dt_spec ledBlue = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios);
 static const struct gpio_dt_spec ledRed = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
@@ -294,10 +294,10 @@ int main(void)
                 float sens_g = 4096.0f; /* ±2g default */
                 if (msg.accel_range == 1) sens_g = 2048.0f;   /* ±4g */
                 else if (msg.accel_range == 2) sens_g = 1024.0f; /* ±8g */
-                float ax_g = msg.ax_raw / sens_g;
-                float ay_g = msg.ay_raw / sens_g;
-                float az_g = msg.az_raw / sens_g;
-
+                float ax_g = 9.807 * msg.ax_raw / sens_g;
+                float ay_g = 9.807 * msg.ay_raw / sens_g;
+                float az_g = 9.807 * msg.az_raw / sens_g;
+                
                 float rh = 0.0, tc = 0.0;
                 if (msg.rh_raw != 0) {
                     rh = (125.0 * msg.rh_raw / 65536.0) - 6.0;
@@ -313,6 +313,7 @@ int main(void)
                 if (soil_pct > 100.0f) soil_pct = 100.0f; //Dry
 
                 uint8_t R = 0, G = 0, B = 0;
+                const char *dominant = "";
                 if (msg.clr_raw > 0) {
                     uint32_t r_scaled = (uint32_t)msg.red_raw * 255u;
                     uint32_t g_scaled = (uint32_t)msg.grn_raw * 255u;
@@ -324,20 +325,23 @@ int main(void)
 
                     if (R >= G && R >= B) {
                         count = 4;   // Red dominant
+                        dominant = "RED";
                     } else if (G >= R && G >= B) {
                         count = 2;   // Green dominant
+                        dominant = "GREEN";
                     } else {
                         count = 1;   // Blue dominant
+                        dominant = "BLUE";
                     }
                 }
                 if (read_ticker_event) {
                     read_ticker_event = false;
-                    printk("SOIL MOISTURE: \n");
-                    printk("LIGHT: %.2f%%\n", light_pct);
+                    printk("SOIL MOISTURE: %.1f%%\n", (double) soil_pct);
+                    printk("LIGHT: %.2f%%\n", (double) light_pct);
                     gps_print_from_sentence(msg.gps_sentence);
-                    printk("COLOR SENSOR: \n");
-                    printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n", ax_g, ay_g, az_g);
-                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n", tc, rh);
+                    printk("COLOR SENSOR: Clear: %d Red: %d Green: %d Blue: %d -- Dominant color: %s\n", msg.clr_raw, msg.red_raw, msg.grn_raw, msg.blu_raw, dominant);
+                    printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n", (double) ax_g, (double) ay_g, (double) az_g);
+                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n", (double) tc, (double) rh);
                 }
 
             }
