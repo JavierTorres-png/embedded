@@ -20,6 +20,7 @@ static const struct gpio_dt_spec ledBlue = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpio
 static const struct gpio_dt_spec ledRed = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec ledGreen = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
+static const struct gpio_dt_spec onboard_led =GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_1), gpios);
 
 static volatile bool isr_btn_event = false;
 static volatile bool long_press_timeout = false;
@@ -200,6 +201,15 @@ int main(void)
         return 0;
     }
 
+    if (!device_is_ready(onboard_led.port)) {
+        printk("Onboard LED not ready!\n");
+    }
+
+    if (gpio_pin_configure_dt(&onboard_led, GPIO_OUTPUT_INACTIVE) < 0) {
+        printk("Error: configuring LED\n");
+        return 0;
+    }
+    
     if (bus_out_init(&my_bus_out) != 0) {
         return 0;
     }
@@ -273,6 +283,7 @@ int main(void)
 
         // Photoresistor related code
         if (mode == MODE_NORMAL) {
+            gpio_pin_set_dt(&onboard_led, 1);
             struct sensor_msg msg;
             if (sensor_thread_try_get(&msg)) {
                 float scaled_raw = msg.light_raw * LIGHT_SENSITIVITY;
@@ -323,12 +334,10 @@ int main(void)
                     read_ticker_event = false;
                     printk("SOIL MOISTURE: \n");
                     printk("LIGHT: %.2f%%\n", light_pct);
-                    printk("GPS: \n");
+                    gps_print_from_sentence(msg.gps_sentence);
                     printk("COLOR SENSOR: \n");
                     printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n", ax_g, ay_g, az_g);
                     printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n", tc, rh);
-
-                    gps_print_from_sentence(msg.gps_sentence);
                 }
 
             }
