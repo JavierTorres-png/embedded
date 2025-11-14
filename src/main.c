@@ -296,8 +296,8 @@ static void gps_print_from_sentence(const char *sentence)
 
         printk("GPS:\n");
         printk("\tTime: %02d:%02d:%02d\n", hour, min, sec);
-        printk("\tLat: %.6f° %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
-        printk("\tLon: %.6f° %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
+        printk("\tLat: %.6f deg%c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
+        printk("\tLon: %.6f deg%c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
         printk("\tAlt: %s m\n", fields[9]);
         if (fields[7]) {
             printk("\tSatellites: %s\n", fields[7]);
@@ -557,7 +557,7 @@ int main(void)
                 gps_print_from_sentence(msg.gps_sentence);
                 printk("COLOR SENSOR: Clear: %d Red: %d Green: %d Blue: %d -- Dominant color: %s\n",
                        msg.clr_raw, msg.red_raw, msg.grn_raw, msg.blu_raw, dominant);
-                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n",
+                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s^2\n\tY_axis: %.2f m/s^2\n\tZ_axis: %.2f m/s^2\n",
                        (double)ax_g, (double)ay_g, (double)az_g);
 
                 if (!temp_in_range || !rh_in_range) {
@@ -568,10 +568,10 @@ int main(void)
                     if (!rh_in_range) {
                         printk("\tRelative Humidity %.1f%% is outside [25, 75]%%\n", (double)rh);
                     }
-                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 } else {
-                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 }
             } // end if(sensor_thread_try_get)
