@@ -166,14 +166,15 @@ K_TIMER_DEFINE(my_timeout, timeout_handler, NULL);*/
 void read_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     read_ticker_event = true;
+    measure_ticker_event = true;
 }
 K_TIMER_DEFINE(read_ticker, read_ticker_handler, NULL);
 
-void measure_ticker_handler(struct k_timer *timer_id) {
+/*void measure_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     measure_ticker_event = true;
 }
-K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);
+K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);*/
 
 
 static void button_isr (const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
@@ -363,7 +364,7 @@ int main(void)
     }
 
     sensor_thread_start();
-    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
+    //k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
     k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(MODE_TEST_SLEEP_TIME));
 
     gpio_pin_set_dt(&onboard_blue_led, 1);
@@ -408,7 +409,6 @@ int main(void)
                     printk("Mode Normal\n");
                     gpio_pin_set_dt(&onboard_blue_led, 0);
                     gpio_pin_set_dt(&onboard_green_led, 1);
-                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_NORMAL_SLEEP_TIME));
@@ -421,7 +421,6 @@ int main(void)
                     printk("Mode Test\n");
                     gpio_pin_set_dt(&onboard_blue_led, 1);
                     gpio_pin_set_dt(&onboard_green_led, 0);
-                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_TEST_SLEEP_TIME));
