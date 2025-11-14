@@ -285,12 +285,16 @@ static void gps_print_from_sentence(const char *sentence)
         float lat = nmea_to_degrees(fields[2], fields[3][0]);
         float lon = nmea_to_degrees(fields[4], fields[5][0]);
 
-        printk("GPS:\n");
-        printk("\tTime: %c%c:%c%c:%c%c\n",
-               fields[1][0], fields[1][1],
-               fields[1][2], fields[1][3],
-               fields[1][4], fields[1][5]);
+        // Convert HH, MM, SS to integers
+        int hour = (fields[1][0] - '0') * 10 + (fields[1][1] - '0');
+        int min  = (fields[1][2] - '0') * 10 + (fields[1][3] - '0');
+        int sec  = (fields[1][4] - '0') * 10 + (fields[1][5] - '0');
 
+        // Add one hour
+        hour = (hour + 1) % 24;   // wrap from 23 → 0
+
+        printk("GPS:\n");
+        printk("\tTime: %02d:%02d:%02d\n", hour, min, sec);
         printk("\tLat: %.6f° %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
         printk("\tLon: %.6f° %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
         printk("\tAlt: %s m\n", fields[9]);
