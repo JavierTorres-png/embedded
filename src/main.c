@@ -166,15 +166,14 @@ K_TIMER_DEFINE(my_timeout, timeout_handler, NULL);*/
 void read_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     read_ticker_event = true;
-    measure_ticker_event = true;
 }
 K_TIMER_DEFINE(read_ticker, read_ticker_handler, NULL);
 
-/*void measure_ticker_handler(struct k_timer *timer_id) {
+void measure_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     measure_ticker_event = true;
 }
-K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);*/
+K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);
 
 
 static void button_isr (const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
@@ -296,8 +295,8 @@ static void gps_print_from_sentence(const char *sentence)
 
         printk("GPS:\n");
         printk("\tTime: %02d:%02d:%02d\n", hour, min, sec);
-        printk("\tLat: %.6f deg%c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
-        printk("\tLon: %.6f deg%c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
+        printk("\tLat: %.6f° %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
+        printk("\tLon: %.6f° %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
         printk("\tAlt: %s m\n", fields[9]);
         if (fields[7]) {
             printk("\tSatellites: %s\n", fields[7]);
@@ -364,7 +363,7 @@ int main(void)
     }
 
     sensor_thread_start();
-    //k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
+    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
     k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(MODE_TEST_SLEEP_TIME));
 
     gpio_pin_set_dt(&onboard_blue_led, 1);
@@ -409,6 +408,7 @@ int main(void)
                     printk("Mode Normal\n");
                     gpio_pin_set_dt(&onboard_blue_led, 0);
                     gpio_pin_set_dt(&onboard_green_led, 1);
+                    k_timer_start(&measure_ticker, K_SECONDS(0.1), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_NORMAL_SLEEP_TIME));
@@ -421,6 +421,7 @@ int main(void)
                     printk("Mode Test\n");
                     gpio_pin_set_dt(&onboard_blue_led, 1);
                     gpio_pin_set_dt(&onboard_green_led, 0);
+                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_TEST_SLEEP_TIME));
@@ -462,15 +463,21 @@ int main(void)
                     if (R >= G && R >= B) {
                         count    = 4;   // Red dominant
                         dominant = "RED";
-                        dom_red_count++;     /* NM4: count this printed sample */
+                        if (mode == MODE_NORMAL) {
+                            dom_red_count++;     /* NM4: count this printed sample */
+                        }
                     } else if (G >= R && G >= B) {
                         count    = 2;   // Green dominant
                         dominant = "GREEN";
-                        dom_green_count++;
+                        if (mode == MODE_NORMAL) {
+                            dom_green_count++;     /* NM4: count this printed sample */
+                        }
                     } else {
                         count    = 1;   // Blue dominant
                         dominant = "BLUE";
-                        dom_blue_count++;
+                        if (mode == MODE_NORMAL) {
+                            dom_blue_count++;     /* NM4: count this printed sample */
+                        }
                     }
                 }
                 
@@ -498,19 +505,20 @@ int main(void)
 
 
                 /* ---- NM3 / NM5: update stats ONLY for printed samples ---- */
+                if (mode == MODE_NORMAL) {
+                    if (msg.temp_raw != 0) {
+                        add_sample(&temp_stats, (double)tc);
+                    }
+                    if (msg.rh_raw != 0) {
+                        add_sample(&rh_stats, (double)rh);
+                    }
+                    add_sample(&light_stats, (double)light_pct);
+                    add_sample(&soil_stats, (double)soil_pct);
 
-                if (msg.temp_raw != 0) {
-                    add_sample(&temp_stats, (double)tc);
+                    add_axis_sample(&ax_stats, (double)ax_g);
+                    add_axis_sample(&ay_stats, (double)ay_g);
+                    add_axis_sample(&az_stats, (double)az_g);
                 }
-                if (msg.rh_raw != 0) {
-                    add_sample(&rh_stats, (double)rh);
-                }
-                add_sample(&light_stats, (double)light_pct);
-                add_sample(&soil_stats, (double)soil_pct);
-
-                add_axis_sample(&ax_stats, (double)ax_g);
-                add_axis_sample(&ay_stats, (double)ay_g);
-                add_axis_sample(&az_stats, (double)az_g);
 
 
                 bool light_in_range = (light_pct > LIGHT_MIN_PCT &&
@@ -557,7 +565,7 @@ int main(void)
                 gps_print_from_sentence(msg.gps_sentence);
                 printk("COLOR SENSOR: Clear: %d Red: %d Green: %d Blue: %d -- Dominant color: %s\n",
                        msg.clr_raw, msg.red_raw, msg.grn_raw, msg.blu_raw, dominant);
-                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s^2\n\tY_axis: %.2f m/s^2\n\tZ_axis: %.2f m/s^2\n",
+                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n",
                        (double)ax_g, (double)ay_g, (double)az_g);
 
                 if (!temp_in_range || !rh_in_range) {
@@ -568,10 +576,10 @@ int main(void)
                     if (!rh_in_range) {
                         printk("\tRelative Humidity %.1f%% is outside [25, 75]%%\n", (double)rh);
                     }
-                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 } else {
-                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 }
             } // end if(sensor_thread_try_get)

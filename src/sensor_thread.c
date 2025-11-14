@@ -349,7 +349,7 @@ static void gps_uart_isr(const struct device *dev, void *user_data)
                 if (c == '\n') {
                     nmea_line[line_pos] = '\0';
 
-                    /* Only keep $GPGGA / $GNGGA, as before */
+                    /* Only keep if line has $GPGGA or $GNGGA*/
                     if (strstr(nmea_line, "$GPGGA") || strstr(nmea_line, "$GNGGA")) {
                         size_t len = strlen(nmea_line);
                         if (len >= BUF_SIZE) {
