@@ -16,7 +16,7 @@
 #define MODE_TEST_SLEEP_TIME 2
 #define MODE_NORMAL_SLEEP_TIME 30
 
-#define LIGHT_SENSITIVITY 4
+#define LIGHT_SENSITIVITY 2
 
 /* --- Fixed limits for plant monitoring --- */
 #define TEMP_MIN_C      -10.0f
@@ -165,15 +165,16 @@ K_TIMER_DEFINE(my_timeout, timeout_handler, NULL);*/
 
 void read_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
+    measure_ticker_event = true;
     read_ticker_event = true;
 }
 K_TIMER_DEFINE(read_ticker, read_ticker_handler, NULL);
 
-void measure_ticker_handler(struct k_timer *timer_id) {
+/*void measure_ticker_handler(struct k_timer *timer_id) {
     ARG_UNUSED(timer_id);
     measure_ticker_event = true;
 }
-K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);
+K_TIMER_DEFINE(measure_ticker, measure_ticker_handler, NULL);*/
 
 
 static void button_isr (const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
@@ -363,8 +364,7 @@ int main(void)
     }
 
     sensor_thread_start();
-    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
-    k_timer_start(&read_ticker, K_SECONDS(0.1), K_SECONDS(MODE_TEST_SLEEP_TIME));
+    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
 
     gpio_pin_set_dt(&onboard_blue_led, 1);
 
@@ -408,7 +408,6 @@ int main(void)
                     printk("Mode Normal\n");
                     gpio_pin_set_dt(&onboard_blue_led, 0);
                     gpio_pin_set_dt(&onboard_green_led, 1);
-                    k_timer_start(&measure_ticker, K_SECONDS(0.1), K_SECONDS(MODE_NORMAL_SLEEP_TIME));
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_NORMAL_SLEEP_TIME));
@@ -421,7 +420,7 @@ int main(void)
                     printk("Mode Test\n");
                     gpio_pin_set_dt(&onboard_blue_led, 1);
                     gpio_pin_set_dt(&onboard_green_led, 0);
-                    k_timer_start(&measure_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME));
+                    k_timer_stop(&hourly_stats_timer);
                     k_timer_start(&read_ticker,
                                   K_SECONDS(0),
                                   K_SECONDS(MODE_TEST_SLEEP_TIME));
@@ -565,21 +564,21 @@ int main(void)
                 gps_print_from_sentence(msg.gps_sentence);
                 printk("COLOR SENSOR: Clear: %d Red: %d Green: %d Blue: %d -- Dominant color: %s\n",
                        msg.clr_raw, msg.red_raw, msg.grn_raw, msg.blu_raw, dominant);
-                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s²\n\tY_axis: %.2f m/s²\n\tZ_axis: %.2f m/s²\n",
+                printk("ACCELEROMETERS:\n\tX_axis: %.2f m/s^2\n\tY_axis: %.2f m/s^2\n\tZ_axis: %.2f m/s^2\n",
                        (double)ax_g, (double)ay_g, (double)az_g);
 
                 if (!temp_in_range || !rh_in_range) {
                     printk("WARNING: ENVIRONMENT OUT OF SPEC RANGE!\n");
                     if (!temp_in_range) {
-                        printk("\tTemperature %.1f ºC is outside [-10, 50] ºC\n", (double)tc);
+                        printk("\tTemperature %.1f C is outside [-10, 50] C\n", (double)tc);
                     }
                     if (!rh_in_range) {
                         printk("\tRelative Humidity %.1f%% is outside [25, 75]%%\n", (double)rh);
                     }
-                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 } else {
-                    printk("TEMP/HUM:\n\tTemperature: %.1f ºC\n\tRelative Humidity: %.1f%%\n",
+                    printk("TEMP/HUM:\n\tTemperature: %.1f C\n\tRelative Humidity: %.1f%%\n",
                            (double)tc, (double)rh);
                 }
             } // end if(sensor_thread_try_get)
@@ -601,7 +600,7 @@ int main(void)
                     double mean_soil  = soil_stats.sum  / soil_stats.count;
 
                     printk("\n[NM3] Hourly statistics (N = %u samples)\n", temp_stats.count);
-                    printk("  Temperature [ºC]: mean = %.2f  min = %.2f  max = %.2f\n",
+                    printk("  Temperature [C]: mean = %.2f  min = %.2f  max = %.2f\n",
                            mean_temp, temp_stats.min, temp_stats.max);
                     printk("  Rel. Humidity [%%]: mean = %.2f  min = %.2f  max = %.2f\n",
                            mean_rh, rh_stats.min, rh_stats.max);
