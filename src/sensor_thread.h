@@ -23,6 +23,4 @@ void sensor_thread_start(void);                     // Start thread (for the fir
 void sensor_thread_measure();                       // Wake up sensor_thread
 bool sensor_thread_try_get(struct sensor_msg *out); // Getter for sensor_msg struct
 
-extern bool finished;                               // To know if measuring is finished or not (avoid old values)
-
 #endif /* SENSOR_THREAD_H */

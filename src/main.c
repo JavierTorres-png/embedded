@@ -121,9 +121,10 @@ int main(void)
         }
 
         /* Read event: when ready, get sample and process it */
-        if (init_consume_read()) {
+        if (init_read()) {
             struct sensor_msg msg;
             if (sensor_thread_try_get(&msg)) {
+                consume_read();
                 uint8_t pattern = process_sensor_sample(&msg, init_get_mode());
                 (void)bus_out_write(bus, pattern);
                 gps_print_from_sentence(msg.gps_sentence);

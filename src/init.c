@@ -161,11 +161,20 @@ int init_system(void)
     return 0;
 }
 
+
+static void clear_read_flags(void)
+{
+    measure_event = false;
+    read_event = false;
+}
+
 /* Mode control */
 void init_set_test_mode(void)
 {
     current_mode = MODE_TEST;
     k_timer_stop(&hourly_timer);
+    k_timer_stop(&read_ticker);
+    clear_read_flags();
     k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_TEST_SLEEP_TIME_SEC));
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 1);
@@ -178,6 +187,8 @@ void init_set_normal_mode(void)
 {
     current_mode = MODE_NORMAL;
     reset_all_stats();
+    k_timer_stop(&read_ticker);
+    clear_read_flags();
     k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME_SEC));
     k_timer_start(&hourly_timer, K_MINUTES(1), K_MINUTES(1));
 
@@ -207,11 +218,17 @@ bool init_consume_measure(void)
     return true;
 }
 
-bool init_consume_read(void)
+bool init_read(void)
 {
     if (!read_event) return false;
-    read_event = false;
     return true;
+}
+
+void consume_read(void)
+{
+        if (read_event){
+            read_event = false;
+        }
 }
 
 bool init_consume_hourly(void)

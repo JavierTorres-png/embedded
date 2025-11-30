@@ -30,7 +30,8 @@ struct bus_out *init_get_default_bus(void);
 
 /* Event consumers (polling-style) */
 bool init_consume_measure(void);
-bool init_consume_read(void);
+bool init_read(void);
+void consume_read(void);
 bool init_consume_hourly(void);
 bool init_consume_button_released(void);
 
