@@ -6,11 +6,12 @@
         led2 = &led_b;
         sw0  = &user_button_3;
         rgbled = &rgb_led_ctrl;
+        tcswake = &tcs_int_pin;
     };
 
 
 
-    leds {
+    gpios {
         compatible = "gpio-leds";
 
         /* RGB COMMON ANODE -> use GPIO_ACTIVE_LOW */
@@ -30,7 +31,10 @@
             gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
             label = "LED TCS";
         };
-
+        tcs_int_pin: tcs_int_pin {
+            gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
+            label = "TCS_INT_PIN";
+        };
     };
 };
 

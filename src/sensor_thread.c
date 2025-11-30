@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/sys/printk.h>
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/uart.h>
@@ -72,10 +71,33 @@ static const struct i2c_dt_spec si7021 = {
 #define TCS_ATIME_154MS    0xC0  /* ~154 ms integration time */
 #define TCS_GAIN_4X        0x01  /* 4x gain (good default)   */
 
+/* threshold registers */
+#define TCS_AILTL   0x04U
+#define TCS_AILTH   0x05U
+#define TCS_AIHTL   0x06U
+#define TCS_AIHTH   0x07U
+#define TCS_PERS    0x0CU
+
+/* ENABLE/AIEN bit */
+#define TCS_ENABLE_AIEN (1 << 4)
+/* Special clear-int command payload (without command bit) is 0x66. We'll send CMD_BIT | 0x66 as single byte. */
+#define TCS_CLEAR_INT_CMD 0x66U
+
+#define TCS_FIXED_LOW   300U    /* e.g. low threshold for cover/touch */
+#define TCS_FIXED_HIGH  30000U   /* e.g. high threshold for flashlight/reflection */
+
+int sensor_set_clear_thresholds(uint16_t low, uint16_t high);
+int sensor_enable_interrupts(bool enable);
+int sensor_clear_interrupt(void);
+
 bool finished = false;
 
 static const struct gpio_dt_spec rgb_led = GPIO_DT_SPEC_GET(DT_ALIAS(rgbled), gpios);
+static const struct gpio_dt_spec tcswake_gpio = GPIO_DT_SPEC_GET(DT_ALIAS(tcswake), gpios);
+static struct gpio_callback tcswake_cb_data;
+static atomic_t tcswake_flag = ATOMIC_INIT(0);
 
+/* i2c spec for tcs */
 static const struct i2c_dt_spec tcs = {
     .bus  = DEVICE_DT_GET(DT_NODELABEL(i2c1)),
     .addr = TCS_ADDR,
@@ -132,8 +154,7 @@ static struct adc_channel_cfg channel_cfg_light = {
 int read_adc_raw (uint8_t channel_id, int16_t *raw_val)
 {
     if (!device_is_ready(adc_dev)) {
-        printk("Error: ADC device is not ready\n");
-        return 0;
+        return -ENODEV;
     }
 
     const struct adc_sequence sequence = {
@@ -143,9 +164,8 @@ int read_adc_raw (uint8_t channel_id, int16_t *raw_val)
         .resolution = 12,
     };
 
-    int8_t ret = adc_read(adc_dev, &sequence);
+    int ret = adc_read(adc_dev, &sequence);
     if (ret < 0) {
-        printk("Error: ADC read_dt failed: %d\n", ret);
         return ret;
     }
 
@@ -230,7 +250,6 @@ static int si7021_soft_reset(void)
 static int si7021_init(void)
 {
     if (!device_is_ready(si7021.bus)) {
-        printk("Si7021: I2C bus not ready\n");
         return -ENODEV;
     }
     return si7021_soft_reset();
@@ -283,19 +302,18 @@ static inline void tcs_led_off(void)
 
 static int tcs_init(void)
 {
-
     if (!device_is_ready(rgb_led.port)) {
-        printk("TCS LED GPIO not ready\n");
         return -ENODEV;
     }
 
     int ret = gpio_pin_configure_dt(&rgb_led, GPIO_OUTPUT_INACTIVE);
     if (ret < 0) {
-        printk("Failed to configure TCS LED GPIO (%d)\n", ret);
         return ret;
     }
 
     if (!device_is_ready(tcs.bus)) return -ENODEV;
+
+    tcs_led_on();
 
     /* Power on, then enable ADC */
     if (tcs_write8(TCS_ENABLE, TCS_EN_PON) < 0) return -EIO;
@@ -308,27 +326,161 @@ static int tcs_init(void)
 
     /* Wait at least 1 integration period before first read */
     k_msleep(160);
+
+
+    sensor_interrupt_init();
+
     return 0;
 }
 
 static int tcs_read_crgb_led(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
 {
-    tcs_led_on();
-    //k_msleep(10);  /* short settle time for LED */
+    int rc;
 
-    int ret_c = tcs_read16(TCS_CDATAL, c);
-    int ret_r = tcs_read16(TCS_RDATAL, r);
-    int ret_g = tcs_read16(TCS_GDATAL, g);
-    int ret_b = tcs_read16(TCS_BDATAL, b);
+    //tcs_led_on();
+    k_msleep(10);  /* short settle time for LED */
 
-    if (ret_c < 0 || ret_r < 0 || ret_g < 0 || ret_b < 0) {
-        tcs_led_off();
-        return -EIO;
-    }
+    rc = tcs_read16(TCS_CDATAL, c);
+    if (rc < 0) { tcs_led_off(); return rc; }
+    rc = tcs_read16(TCS_RDATAL, r);
+    if (rc < 0) { tcs_led_off(); return rc; }
+    rc = tcs_read16(TCS_GDATAL, g);
+    if (rc < 0) { tcs_led_off(); return rc; }
+    rc = tcs_read16(TCS_BDATAL, b);
+    if (rc < 0) { tcs_led_off(); return rc; }
 
     //tcs_led_off();
+    return 0;
+}
+
+static int tcs_read8(uint8_t reg, uint8_t *out)
+{
+    uint8_t cmd = (uint8_t)(TCS_CMD_BIT | reg);
+    if (!device_is_ready(tcs.bus)) {
+        return -ENODEV;
+    }
+    return i2c_write_read_dt(&tcs, &cmd, 1, out, 1);
+}
+
+static int tcs_write_16(uint8_t reg_low, uint16_t value)
+{
+    int rc;
+    rc = tcs_write8(reg_low, (uint8_t)(value & 0xFF));
+    if (rc) return rc;
+    rc = tcs_write8(reg_low + 1, (uint8_t)((value >> 8) & 0xFF));
+    return rc;
+}
+
+static int tcs_write_cmd_byte(uint8_t code)
+{
+    uint8_t buf = (uint8_t)(TCS_CMD_BIT | code);
+    if (!device_is_ready(tcs.bus)) {
+        return -ENODEV;
+    }
+    return i2c_write_dt(&tcs, &buf, 1);
+}
+
+/* Set clear-channel thresholds (low/high). low <= high normally.
+ * Returns 0 on success.
+ */
+int sensor_set_clear_thresholds(uint16_t low, uint16_t high)
+{
+    int rc;
+
+    rc = tcs_write_16(TCS_AILTL, low);
+    if (rc) {
+        return rc;
+    }
+
+    rc = tcs_write_16(TCS_AIHTL, high);
+    if (rc) {
+        return rc;
+    }
+
+    /* default persistence: 1 (one consecutive out-of-range cycle) */
+    rc = tcs_write8(TCS_PERS, 0x01);
+    if (rc) {
+        return rc;
+    }
 
     return 0;
+}
+
+/* Enable or disable RGBC interrupt via ENABLE.AIEN bit */
+int sensor_enable_interrupts(bool enable)
+{
+    int rc;
+    uint8_t en;
+
+    rc = tcs_read8(TCS_ENABLE, &en);
+    if (rc) {
+        return rc;
+    }
+
+    if (enable) {
+        en |= TCS_ENABLE_AIEN;
+    } else {
+        en &= (uint8_t)(~TCS_ENABLE_AIEN);
+    }
+
+    rc = tcs_write8(TCS_ENABLE, en);
+    return rc;
+}
+
+/* Clear sensor interrupt latch using special command (thread context only) */
+int sensor_clear_interrupt(void)
+{
+    int rc = tcs_write_cmd_byte(TCS_CLEAR_INT_CMD);
+    if (rc == 0) {
+        /* small delay to let INT pin release */
+        k_msleep(2);
+    }
+    return rc;
+}
+
+static void tcswake_gpio_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+{
+    ARG_UNUSED(dev);
+    ARG_UNUSED(cb);
+    ARG_UNUSED(pins);
+
+    /* Signal that the INT pin fired; sensor thread will clear the latch by I2C. */
+    atomic_set(&tcswake_flag, 1);
+}
+
+void sensor_interrupt_init(void)
+{
+    int rc;
+    uint16_t cur_clr = 0;
+
+    /* If no wake GPIO defined or device not ready, skip GPIO setup but keep thresholds. */
+    if (!tcswake_gpio.port || !device_is_ready(tcswake_gpio.port)) {
+        /* still program thresholds below even if no GPIO available */
+    } else {
+        /* configure wake GPIO input (pull-up recommended) */
+        rc = gpio_pin_configure_dt(&tcswake_gpio, GPIO_INPUT | GPIO_PULL_UP);
+        if (rc) {
+            /* continue anyway — thresholds still useful */
+        } else {
+            /* Configure for edge interrupts so it can wake CPU in sleep modes (board dependent) */
+            (void)gpio_pin_interrupt_configure_dt(&tcswake_gpio, GPIO_INT_EDGE_BOTH);
+
+            /* install minimal callback (ISR only sets atomic flag) */
+            gpio_init_callback(&tcswake_cb_data, tcswake_gpio_cb, BIT(tcswake_gpio.pin));
+            (void)gpio_add_callback(tcswake_gpio.port, &tcswake_cb_data);
+        }
+    }
+    
+    /* set thresholds */
+
+    (void)sensor_set_clear_thresholds(TCS_FIXED_LOW, TCS_FIXED_HIGH);
+
+    /* clear any edge caused by threshold writes */
+    (void)sensor_clear_interrupt();
+    k_msleep(5);
+
+    /* enable AIEN in ENABLE register (PON/AEN must already be set in tcs_init) */
+    (void)sensor_enable_interrupts(true);
 }
 
 static void gps_uart_isr(const struct device *dev, void *user_data)
@@ -372,13 +524,11 @@ static void sensor_entry(void *a, void *b, void *c)
 {
     int8_t ret = adc_channel_setup(adc_dev, &channel_cfg_light);
     if (ret < 0) {
-        printk("ADC channel setup failed: %d\n", ret);
         return;
     }
     
     uart_dev = DEVICE_DT_GET(UART1_NODE);
     if (!device_is_ready(uart_dev)) {
-        printk("UART not ready\n");
         return;
     }
 
@@ -387,7 +537,6 @@ static void sensor_entry(void *a, void *b, void *c)
 
     ret = adc_channel_setup(adc_dev, &channel_cfg_soil);
     if (ret < 0) {
-        printk("ADC soil channel setup failed: %d\n", ret);
         return;
     }
 
@@ -418,8 +567,19 @@ static void sensor_entry(void *a, void *b, void *c)
         }
 
         uint16_t c_raw = 0, r_raw = 0, g_raw = 0, b_raw = 0;
+        bool tcs_trig = false;
+
         if (tcs_ok) {
             (void)tcs_read_crgb_led(&c_raw, &r_raw, &g_raw, &b_raw);
+
+            /*    If ISR indicated INT happened, consume it and mark trigger.
+             *    ISR only sets atomic flag; here we clear the sensor latch via I2C.
+             */
+            if (atomic_cas(&tcswake_flag, 1, 0)) {
+                tcs_trig = true;
+                (void)sensor_clear_interrupt();
+            }
+
         }
 
         k_mutex_lock(&latest_mtx, K_FOREVER);
@@ -442,6 +602,9 @@ static void sensor_entry(void *a, void *b, void *c)
         } else {
             latest.gps_sentence[0] = '\0';
         }
+
+        /* store the TCS trigger boolean in the message */
+        latest.tcs_triggered = tcs_trig;
 
         finished = true;
         k_mutex_unlock(&latest_mtx);

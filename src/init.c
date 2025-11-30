@@ -142,9 +142,9 @@ int init_system(void)
     if (!device_is_ready(button_dt.port)) {
         return -ENODEV;
     }
-    rc = gpio_pin_configure_dt(&button_dt, GPIO_INPUT);
+    rc = gpio_pin_configure_dt(&button_dt, GPIO_INPUT | GPIO_PULL_UP);
     if (rc) return rc;
-    rc = gpio_pin_interrupt_configure_dt(&button_dt, GPIO_INT_EDGE_BOTH);
+    rc = gpio_pin_interrupt_configure_dt(&button_dt, GPIO_INT_EDGE_FALLING);
     if (rc) return rc;
 
     gpio_init_callback(&button_cb, button_isr, BIT(button_dt.pin));

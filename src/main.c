@@ -135,6 +135,9 @@ int main(void)
                 uint8_t pattern = process_sensor_sample(&msg, init_get_mode());
                 (void)bus_out_write(bus, pattern);
                 gps_print_from_sentence(msg.gps_sentence);
+                if(msg.tcs_triggered && (mode == MODE_ADVANCED)) {
+                    init_set_test_mode();
+                }
                 did_work = true;
             }
         }
