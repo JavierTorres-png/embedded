@@ -198,10 +198,31 @@ void init_set_normal_mode(void)
     printk("init: NORMAL mode\n");
 }
 
+void init_set_advanced_mode(void)
+{
+    current_mode = MODE_ADVANCED;
+    reset_all_stats();
+    k_timer_stop(&read_ticker);
+    clear_read_flags();
+    k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME_SEC));
+    k_timer_start(&hourly_timer, K_MINUTES(1), K_MINUTES(1));
+
+    if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 0);
+    if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 1);
+
+    printk("init: ADVANCED (ECO) mode\n");
+}
+
 int init_toggle_mode(void)
 {
-    if (current_mode == MODE_TEST) init_set_normal_mode();
-    else init_set_test_mode();
+    /* Cycle: TEST -> NORMAL -> ADVANCED -> TEST */
+    if (current_mode == MODE_TEST) {
+        init_set_normal_mode();
+    } else if (current_mode == MODE_NORMAL) {
+        init_set_advanced_mode();
+    } else {
+        init_set_test_mode();
+    }
     return current_mode;
 }
 

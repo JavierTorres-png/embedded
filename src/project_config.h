@@ -11,10 +11,12 @@ typedef float stat_scalar_t;
 /* sleep times (seconds) */
 #define MODE_TEST_SLEEP_TIME_SEC   2U
 #define MODE_NORMAL_SLEEP_TIME_SEC 30U
+#define MODE_ADVANCED_SLEEP_TIME_SEC 30U
 
 /* Modes */
 #define MODE_TEST   1
 #define MODE_NORMAL 2
+#define MODE_ADVANCED 3
 
 /* Bus */
 #define BUS_SIZE 3

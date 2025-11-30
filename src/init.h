@@ -23,6 +23,7 @@ int init_system(void);
 int init_toggle_mode(void);
 void init_set_test_mode(void);
 void init_set_normal_mode(void);
+void init_set_advanced_mode(void);
 int init_get_mode(void);
 
 /* Access to default bus_out (opaque pointer) */

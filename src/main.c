@@ -110,14 +110,21 @@ int main(void)
 
     /* Main event loop: poll event flags provided by init facade */
     while (1) {
+
+        bool did_work = false;
+        int mode = init_get_mode();
+
         /* Timer asked to measure: request sensor acquisition */
         if (init_consume_measure()) {
             sensor_thread_measure();
+            did_work = true;
         }
 
         /* Button released -> toggle mode */
         if (init_consume_button_released()) {
             init_toggle_mode();
+            did_work = true;
+            mode = init_get_mode();
         }
 
         /* Read event: when ready, get sample and process it */
@@ -128,6 +135,7 @@ int main(void)
                 uint8_t pattern = process_sensor_sample(&msg, init_get_mode());
                 (void)bus_out_write(bus, pattern);
                 gps_print_from_sentence(msg.gps_sentence);
+                did_work = true;
             }
         }
 
@@ -136,9 +144,21 @@ int main(void)
             if (init_get_mode() == MODE_NORMAL) {
                 print_hourly_stats();
             }
+            did_work = true;
         }
 
-        k_msleep(10);
+        /* ECO sleep: only when in ADVANCED mode we sleep indefinitely if idle.
+         * In other modes keep polling with 10 ms to preserve responsiveness/behaviour.
+         */
+        if (!did_work) {
+            if (mode == MODE_ADVANCED) {
+                /* Enter deep sleep until an interrupt (timer/GPIO) occurs */
+                k_sleep(K_FOREVER);
+            } else {
+                /* keep responsive in TEST/NORMAL */
+                k_msleep(10);
+            }
+        }
     }
 
     return 0;
