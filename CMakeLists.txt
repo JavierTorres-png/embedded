@@ -7,7 +7,12 @@ project(plant_monitor)
 
 target_sources(app PRIVATE
   src/main.c
+  src/init.c
   src/sensor_thread.c
+  src/sensor_processing.c  
 )
 
-target_include_directories(app PRIVATE)
+# headers don't have to be listed in target_sources; include dirs if needed:
+target_include_directories(app PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
