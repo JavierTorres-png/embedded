@@ -1,0 +1,12 @@
+{
+  // Environment variables for the integrated terminal in VS Code (Windows)
+  "terminal.integrated.env.windows": {
+    "ZEPHYR_TOOLCHAIN_VARIANT": "zephyr",
+    "ZEPHYR_SDK_INSTALL_DIR": "C:/Users/Javi/zephyr-sdk-0.17.2",
+    "PROJECT_DIR": "C:/Users/Javi/Downloads/blink_basic",
+    "ZEPHYR_DIR": "C:/Users/Javi/zephyrproject",
+},
+"files.associations": {
+  "readadc.h": "c"
+},
+}

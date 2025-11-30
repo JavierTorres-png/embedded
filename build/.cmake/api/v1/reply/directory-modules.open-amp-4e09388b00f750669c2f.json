@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "modules/open-amp",
+		"source" : "C:/Users/Javi/zephyrproject/modules/lib/open-amp"
+	}
+}

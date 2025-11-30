@@ -1,0 +1,1198 @@
+
+---
+events:
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/zephyr_package_search.cmake:73 (find_package)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfigVersion.cmake:132 (check_zephyr_package)"
+      - "CMakeLists.txt:5 (find_package)"
+    name: "Zephyr"
+    configs:
+      -
+        filename: "ZephyrConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "zephyr-config.cmake"
+        kind: "cmake"
+    version_request:
+      version: "0.0.0"
+      version_complete: "0.0.0"
+      exact: true
+    settings:
+      required: "optional"
+      quiet: true
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "Zephyr"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "insufficient_version"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Python314/Scripts/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Python314/Scripts/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Python314/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Python314/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/Common Files/Oracle/Java/javapath/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/Common Files/Oracle/Java/javapath/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/trabajo/SSOO/VMware/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/trabajo/SSOO/VMware/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/wbem/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/wbem/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/WindowsPowerShell/v1.0/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/WindowsPowerShell/v1.0/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/OpenSSH/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Windows/System32/OpenSSH/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Android/platform-tools/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Android/platform-tools/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/msys64/ucrt64/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/msys64/ucrt64/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/ProgramData/chocolatey/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/ProgramData/chocolatey/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/CMake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/CMake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/Git/cmd/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/Git/cmd/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files (x86)/Graphviz/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Program Files (x86)/Graphviz/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "insufficient_version"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/zephyr_package_search.cmake:73 (find_package)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:152 (check_zephyr_package)"
+      - "CMakeLists.txt:5 (find_package)"
+    name: "Zephyr"
+    configs:
+      -
+        filename: "ZephyrConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "zephyr-config.cmake"
+        kind: "cmake"
+    version_request:
+      version: "0.0.0"
+      version_complete: "0.0.0"
+      exact: true
+    settings:
+      required: "optional"
+      quiet: true
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "Zephyr"
+      search_paths:
+        - "C:/Users/Javi/Downloads/zephyr"
+        - "C:/Users/Javi/Downloads"
+        - "C:/Users/Javi/zephyr"
+        - "C:/Users/Javi"
+        - "C:/Users/zephyr"
+        - "C:/Users"
+        - "C://zephyr"
+        - "C:/"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: false
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake"
+        mode: "none?"
+        reason: "insufficient_version"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/zephyr-config.cmake"
+        mode: "none?"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/cmake/zephyr/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyr-sdk-0.17.4/cmake/zephyr/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/zephyr_default.cmake:28 (find_package)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:66 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:159 (include_boilerplate)"
+      - "CMakeLists.txt:5 (find_package)"
+    name: "ZephyrBuildConfiguration"
+    configs:
+      -
+        filename: "ZephyrBuildConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "zephyrbuild-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "optional"
+      quiet: true
+      global: false
+      policy_scope: false
+      bypass_provider: false
+      names:
+        - "ZephyrBuild"
+      search_paths:
+        - "C:/Users/Javi/zephyrproject/zephyr/../*"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: false
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: false
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: false
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: false
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/.venv/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/.venv/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/.west/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/.west/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/bootloader/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/bootloader/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/modules/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/modules/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/tools/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/tools/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/ZephyrBuildConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/zephyrbuild-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/zephyr_default.cmake:41 (find_package)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:66 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:159 (include_boilerplate)"
+      - "CMakeLists.txt:5 (find_package)"
+    name: "ZephyrAppConfiguration"
+    configs:
+      -
+        filename: "ZephyrAppConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "zephyrapp-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "optional"
+      quiet: true
+      global: false
+      policy_scope: false
+      bypass_provider: false
+      names:
+        - "ZephyrApp"
+      search_paths:
+        - "C:/Users/Javi/Downloads/blink_basic"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: false
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: false
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: false
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: false
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/ZephyrAppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/zephyrapp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/ZephyrAppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/zephyrapp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/python.cmake:26 (find_program)"
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/zephyr_default.cmake:131 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:66 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:159 (include_boilerplate)"
+      - "CMakeLists.txt:5 (find_package)"
+    mode: "program"
+    variable: "Python3_EXECUTABLE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "python"
+    candidate_directories:
+      - "C:/Python314/Scripts/"
+      - "C:/Python314/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
+      - "C:/trabajo/SSOO/VMware/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/bin/"
+      - "C:/Android/platform-tools/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pcb/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/fet/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/OpenAccess/bin/win32/opt/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Program Files/Java/jdk-11/bin/"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/bin/"
+      - "C:/Program Files (x86)/Graphviz/bin/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/"
+    searched_directories:
+      - "C:/Python314/Scripts/python.com"
+      - "C:/Python314/Scripts/python.exe"
+      - "C:/Python314/Scripts/python"
+      - "C:/Python314/python.com"
+    found: "C:/Python314/python.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.1/Modules/FindPython/Support.cmake:2430 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.1/Modules/FindPython3.cmake:656 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/python.cmake:41 (find_package)"
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/zephyr_default.cmake:131 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:66 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:159 (include_boilerplate)"
+      - "CMakeLists.txt:5 (find_package)"
+    mode: "program"
+    variable: "_Python3_EXECUTABLE_DEBUG"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "python3.14_d"
+      - "python3_d"
+      - "python_d"
+    candidate_directories:
+      - "C:/Python314/"
+    searched_directories:
+      - "C:/Python314/python3.14_d.com"
+      - "C:/Python314/python3.14_d.exe"
+      - "C:/Python314/python3.14_d"
+      - "C:/Python314/python3_d.com"
+      - "C:/Python314/python3_d.exe"
+      - "C:/Python314/python3_d"
+      - "C:/Python314/python_d.com"
+      - "C:/Python314/python_d.exe"
+      - "C:/Python314/python_d"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/ccache.cmake:10 (find_program)"
+      - "C:/Users/Javi/zephyrproject/zephyr/cmake/modules/zephyr_default.cmake:131 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:66 (include)"
+      - "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:159 (include_boilerplate)"
+      - "CMakeLists.txt:5 (find_package)"
+    mode: "program"
+    variable: "CCACHE_FOUND"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ccache"
+    candidate_directories:
+      - "C:/Python314/Scripts/"
+      - "C:/Python314/"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/"
+      - "C:/trabajo/SSOO/VMware/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/bin/"
+      - "C:/Android/platform-tools/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pcb/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/fet/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/OpenAccess/bin/win32/opt/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/bin/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Program Files/Java/jdk-11/bin/"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/bin/"
+      - "C:/Program Files (x86)/Graphviz/bin/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/"
+    searched_directories:
+      - "C:/Python314/Scripts/ccache.com"
+      - "C:/Python314/Scripts/ccache.exe"
+      - "C:/Python314/Scripts/ccache"
+      - "C:/Python314/ccache.com"
+      - "C:/Python314/ccache.exe"
+      - "C:/Python314/ccache"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/ccache.com"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/ccache.exe"
+      - "C:/Program Files/Common Files/Oracle/Java/javapath/ccache"
+      - "C:/trabajo/SSOO/VMware/bin/ccache.com"
+      - "C:/trabajo/SSOO/VMware/bin/ccache.exe"
+      - "C:/trabajo/SSOO/VMware/bin/ccache"
+      - "C:/Windows/System32/ccache.com"
+      - "C:/Windows/System32/ccache.exe"
+      - "C:/Windows/System32/ccache"
+      - "C:/Windows/ccache.com"
+      - "C:/Windows/ccache.exe"
+      - "C:/Windows/ccache"
+      - "C:/Windows/System32/wbem/ccache.com"
+      - "C:/Windows/System32/wbem/ccache.exe"
+      - "C:/Windows/System32/wbem/ccache"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ccache.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ccache.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/ccache"
+      - "C:/Windows/System32/OpenSSH/ccache.com"
+      - "C:/Windows/System32/OpenSSH/ccache.exe"
+      - "C:/Windows/System32/OpenSSH/ccache"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/ccache.com"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/ccache.exe"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR/ccache"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/ccache.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/ccache.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/ccache"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/bin/ccache.com"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/bin/ccache.exe"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PDS/bin/ccache"
+      - "C:/Android/platform-tools/ccache.com"
+      - "C:/Android/platform-tools/ccache.exe"
+      - "C:/Android/platform-tools/ccache"
+      - "C:/msys64/ucrt64/bin/ccache.com"
+      - "C:/msys64/ucrt64/bin/ccache.exe"
+      - "C:/msys64/ucrt64/bin/ccache"
+      - "C:/ProgramData/chocolatey/bin/ccache.com"
+      - "C:/ProgramData/chocolatey/bin/ccache.exe"
+      - "C:/ProgramData/chocolatey/bin/ccache"
+      - "C:/Program Files/CMake/bin/ccache.com"
+      - "C:/Program Files/CMake/bin/ccache.exe"
+      - "C:/Program Files/CMake/bin/ccache"
+      - "C:/Program Files/Git/cmd/ccache.com"
+      - "C:/Program Files/Git/cmd/ccache.exe"
+      - "C:/Program Files/Git/cmd/ccache"
+      - "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/ccache.com"
+      - "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/ccache.exe"
+      - "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pcb/bin/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pcb/bin/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pcb/bin/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/fet/bin/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/fet/bin/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/fet/bin/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/OpenAccess/bin/win32/opt/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/OpenAccess/bin/win32/opt/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/OpenAccess/bin/win32/opt/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/bin/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/bin/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/bin/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/capture/ccache"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/ccache.com"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/ccache.exe"
+      - "C:/OrCAD/OrCAD_16.6_Lite/tools/pspice/ccache"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/ccache.com"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/ccache.exe"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WindowsApps/ccache"
+      - "C:/Program Files/Java/jdk-11/bin/ccache.com"
+      - "C:/Program Files/Java/jdk-11/bin/ccache.exe"
+      - "C:/Program Files/Java/jdk-11/bin/ccache"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/bin/ccache.com"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/bin/ccache.exe"
+      - "C:/Users/Javi/Desktop/La vida es dolor 3ra parte/PIAT/Microsoft VS Code/bin/ccache"
+      - "C:/Program Files (x86)/Graphviz/bin/ccache.com"
+      - "C:/Program Files (x86)/Graphviz/bin/ccache.exe"
+      - "C:/Program Files (x86)/Graphviz/bin/ccache"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/ccache.com"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/ccache.exe"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Links/ccache"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/ccache.com"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/ccache.exe"
+      - "C:/Users/Javi/AppData/Local/Microsoft/WinGet/Packages/oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe/usr/bin/ccache"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:5 (find_package)"
+    name: "Zephyr"
+    configs:
+      -
+        filename: "ZephyrConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "zephyr-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "Zephyr"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/Downloads/blink_basic/^/CMakeFiles/pkgRedirects/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/cmake/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/ZephyrConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyrunittest-package/zephyr-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "C:/Users/Javi/zephyrproject/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake"
+      mode: "config"
+      version: "4.2.99"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\trabajo\\SSOO\\VMware\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PDS\\bin"
+        - "C:\\Android\\platform-tools"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\pcb\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\fet\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\OpenAccess\\bin\\win32\\opt"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\bin"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\Capture"
+        - "C:\\OrCAD\\OrCAD_16.6_Lite\\tools\\PSpice"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Program Files\\Java\\jdk-11\\bin"
+        - "C:\\Users\\Javi\\Desktop\\La vida es dolor 3ra parte\\PIAT\\Microsoft VS Code\\bin"
+        - "C:\\Program Files (x86)\\Graphviz\\bin"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Javi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\oss-winget.dtc_Microsoft.Winget.Source_8wekyb3d8bbwe\\usr\\bin"
+...

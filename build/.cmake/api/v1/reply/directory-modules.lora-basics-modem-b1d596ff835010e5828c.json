@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "modules/lora-basics-modem",
+		"source" : "C:/Users/Javi/zephyrproject/zephyr/modules/lora-basics-modem"
+	}
+}

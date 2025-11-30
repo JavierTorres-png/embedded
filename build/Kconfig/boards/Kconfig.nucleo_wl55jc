@@ -1,0 +1,2 @@
+# Load board Kconfig descriptions.
+osource "C:/Users/Javi/zephyrproject/zephyr/boards/st/nucleo_wl55jc/Kconfig.nucleo_wl55jc"

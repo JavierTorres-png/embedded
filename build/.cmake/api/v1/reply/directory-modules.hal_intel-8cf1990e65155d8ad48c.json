@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "modules/hal_intel",
+		"source" : "C:/Users/Javi/zephyrproject/modules/hal/intel/zephyr"
+	}
+}

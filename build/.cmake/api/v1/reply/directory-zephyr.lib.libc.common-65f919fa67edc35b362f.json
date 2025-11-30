@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "zephyr/lib/libc/common",
+		"source" : "C:/Users/Javi/zephyrproject/zephyr/lib/libc/common"
+	}
+}

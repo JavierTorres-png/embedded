@@ -1,0 +1,61 @@
+cmake:
+  application:
+    configuration-dir: 'C:/Users/Javi/Downloads/blink_basic'
+    source-dir: 'C:/Users/Javi/Downloads/blink_basic'
+  board:
+    name: 'nucleo_wl55jc'
+    path:
+     - 'C:/Users/Javi/zephyrproject/zephyr/boards/st/nucleo_wl55jc'
+    qualifiers: 'stm32wl55xx'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/bindings'
+    files:
+     - 'C:/Users/Javi/zephyrproject/zephyr/boards/st/nucleo_wl55jc/nucleo_wl55jc.dts'
+     - './boards/nucleo_wl55jc.overlay'
+    include-dirs:
+     - 'C:/Users/Javi/zephyrproject/modules/hal/ambiq/dts'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/atmel/include'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/bouffalolab/include'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/bouffalolab/include/zephyr'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/gigadevice/include'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/microchip/include'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/microchip/dts'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/nuvoton/dts'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/nxp/dts'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/stm32/dts'
+     - 'C:/Users/Javi/zephyrproject/modules/hal/ti/dts'
+     - 'C:/Users/Javi/zephyrproject/zephyr/include'
+     - 'C:/Users/Javi/zephyrproject/zephyr/include/zephyr'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/common'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/vendor'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/rx'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/x86'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/xtensa'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/sparc'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/riscv'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/posix'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/arm64'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/arm'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts/arc'
+     - 'C:/Users/Javi/zephyrproject/zephyr/dts'
+    user-files:
+     - './boards/nucleo_wl55jc.overlay'
+  kconfig:
+    files:
+     - 'C:/Users/Javi/zephyrproject/zephyr/boards/st/nucleo_wl55jc/nucleo_wl55jc_defconfig'
+     - 'C:/Users/Javi/Downloads/blink_basic/./confs/prj_nucleo_wl55jc.conf'
+    user-files:
+     - './confs/prj_nucleo_wl55jc.conf'
+  toolchain:
+    name: 'zephyr'
+    path: 'C:/Users/Javi/zephyr-sdk-0.17.4'
+  zephyr:
+    version: '4.2.99'
+    zephyr-base: 'C:/Users/Javi/zephyrproject/zephyr'
+version: '0.1.0'
+west:
+  command: 'C:\Users\Javi\zephyrproject\.venv\Scripts\west build -p auto -b nucleo_wl55jc C:/Users/Javi/Downloads/blink_basic -d C:/Users/Javi/Downloads/blink_basic/build -DUSER_CACHE_DIR=C:/Users/Javi/Downloads/blink_basic/.zephyr-cache -DDTC_OVERLAY_FILE=./boards/nucleo_wl55jc.overlay -DCONF_FILE=./confs/prj_nucleo_wl55jc.conf -DUSE_CCACHE=0'
+  topdir: 'C:\Users\Javi\zephyrproject'
+  version: '1.5.0'

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "modules/nrf_wifi",
+		"source" : "C:/Users/Javi/zephyrproject/zephyr/modules/nrf_wifi"
+	}
+}
