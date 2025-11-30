@@ -99,6 +99,8 @@ static struct k_mutex enable_mtx;
 static struct k_mutex  time_mtx;
 static struct k_condvar enable_cv;
 
+static const struct gpio_dt_spec soilGpio = GPIO_DT_SPEC_GET(DT_ALIAS(soil), gpios);
+
 void sensor_thread_measure()
 {
     k_mutex_lock(&enable_mtx, K_FOREVER);
@@ -391,6 +393,16 @@ static void sensor_entry(void *a, void *b, void *c)
         return;
     }
 
+    if (!device_is_ready(soilGpio.port)) {
+        printk("Error: Soil GPIO device not ready\n");
+        return;
+    }
+
+    if (gpio_pin_configure_dt(&soilGpio, GPIO_OUTPUT_INACTIVE) < 0) {
+        printk("Error: configuring Soil GPIO\n");
+        return;
+    }
+
     k_mutex_init(&latest_mtx);
 
     bool accel_ok = (mma_init(&accel_range) == 0);
@@ -400,11 +412,13 @@ static void sensor_entry(void *a, void *b, void *c)
     bool tcs_ok   = (tcs_init() == 0);
 
     while (1) {
+        gpio_pin_set_dt(&soilGpio, 1);
         int16_t light_raw = 0;
         int16_t soil_raw  = 0;
 
         (void)read_adc_raw(0, &light_raw); // Channel 0 – LDR
         (void)read_adc_raw(1, &soil_raw);  // Channel 1 – Soil moisture
+        gpio_pin_set_dt(&soilGpio, 0);
 
         int16_t ax = 0, ay = 0, az = 0;
         if (accel_ok) {

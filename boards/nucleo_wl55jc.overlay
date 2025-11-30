@@ -6,6 +6,7 @@
         led2 = &led_b;
         sw0  = &user_button_3;
         rgbled = &rgb_led_ctrl;
+        soil = &soil_gpio_d2;
     };
 
 
@@ -29,6 +30,10 @@
         rgb_led_ctrl: rgb_led_ctrl {
             gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
             label = "LED TCS";
+        };
+        soil_gpio_d2: soil_gpio_d2 {
+            gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+            label = "SOIL MOISTURE";
         };
 
     };

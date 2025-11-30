@@ -184,7 +184,8 @@ static void button_isr (const struct device *dev, struct gpio_callback *cb, uint
     isr_btn_event = true;
 }
 
-int bus_out_init (struct bus_out *bus)
+int 
+bus_out_init (struct bus_out *bus)
 {
     for (size_t i = 0; i < bus->pin_count; i++) {
         if(!device_is_ready(bus->pins[i].port)) {
