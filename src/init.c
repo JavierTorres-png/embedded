@@ -226,9 +226,7 @@ bool init_read(void)
 
 void consume_read(void)
 {
-        if (read_event){
-            read_event = false;
-        }
+    read_event = false;
 }
 
 bool init_consume_hourly(void)
