@@ -42,6 +42,12 @@ static const struct gpio_dt_spec onboard_green_led = GPIO_DT_SPEC_GET(DT_NODELAB
 static const struct gpio_dt_spec onboard_green_led = {0};
 #endif
 
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(red_led_3), okay)
+static const struct gpio_dt_spec onboard_red_led = GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios);
+#else
+static const struct gpio_dt_spec onboard_red_led = {0};
+#endif
+
 /* button device tree spec */
 static const struct gpio_dt_spec button_dt = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
 
@@ -131,6 +137,7 @@ int init_system(void)
     /* Onboard leds (optional) */
     (void)configure_dt_pin(&onboard_blue_led, GPIO_OUTPUT_INACTIVE);
     (void)configure_dt_pin(&onboard_green_led, GPIO_OUTPUT_INACTIVE);
+    (void)configure_dt_pin(&onboard_red_led, GPIO_OUTPUT_INACTIVE);
 
     /* Configure bus pins (idempotent) */
     for (size_t i = 0; i < default_bus.pin_count; i++) {
@@ -179,6 +186,7 @@ void init_set_test_mode(void)
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 1);
     if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 0);
+    if (onboard_red_led.port) (void)gpio_pin_set_dt(&onboard_red_led, 0);
 
     printk("init: TEST mode\n");
 }
@@ -194,6 +202,7 @@ void init_set_normal_mode(void)
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 0);
     if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 1);
+    if (onboard_red_led.port) (void)gpio_pin_set_dt(&onboard_red_led, 0);
 
     printk("init: NORMAL mode\n");
 }
@@ -208,7 +217,8 @@ void init_set_advanced_mode(void)
     k_timer_start(&hourly_timer, K_MINUTES(1), K_MINUTES(1));
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 0);
-    if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 1);
+    if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 0);
+    if (onboard_red_led.port) (void)gpio_pin_set_dt(&onboard_red_led, 1);
 
     printk("init: ADVANCED (ECO) mode\n");
 }
@@ -216,12 +226,17 @@ void init_set_advanced_mode(void)
 int init_toggle_mode(void)
 {
     /* Cycle: TEST -> NORMAL -> ADVANCED -> TEST */
-    if (current_mode == MODE_TEST) {
-        init_set_normal_mode();
-    } else if (current_mode == MODE_NORMAL) {
-        init_set_advanced_mode();
-    } else {
-        init_set_test_mode();
+    switch (current_mode)
+    {
+        case MODE_TEST:
+            init_set_normal_mode();
+            break;
+        case MODE_NORMAL:
+            init_set_advanced_mode();
+            break;
+        default:
+            init_set_test_mode();
+            break;
     }
     return current_mode;
 }

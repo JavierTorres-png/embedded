@@ -567,7 +567,7 @@ static void sensor_entry(void *a, void *b, void *c)
 
         (void)read_adc_raw(0, &light_raw); // Channel 0 – LDR
         (void)read_adc_raw(1, &soil_raw);  // Channel 1 – Soil moisture
-
+        
         gpio_pin_set_dt(&soilGpio, 0);
 
         int16_t ax = 0, ay = 0, az = 0;
