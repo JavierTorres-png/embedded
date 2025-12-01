@@ -19,62 +19,62 @@
 /* --- NMEA (GGA) helpers for GPS printing --- */
 static float nmea_to_degrees(const char *nmea, char dir)
 {
-    if (!nmea || strlen(nmea) < 4) return 0.0f;
+    if (!nmea || strlen(nmea) < 4) return 0.0f; // sanity: empty or too short -> 0
 
     float value = 0.0f;
     for (int i = 0; nmea[i]; i++) {
         if (nmea[i] >= '0' && nmea[i] <= '9') {
-            value = value * 10.0f + (nmea[i] - '0');
+            value = value * 10.0f + (nmea[i] - '0'); // accumulate integer part
         } else if (nmea[i] == '.') {
             float decimal = 0.0f;
             float divisor = 10.0f;
             for (int j = i + 1; nmea[j] >= '0' && nmea[j] <= '9'; j++) {
-                decimal += (nmea[j] - '0') / divisor;
+                decimal += (nmea[j] - '0') / divisor; // accumulate fraction digits
                 divisor *= 10.0f;
             }
-            value += decimal;
-            break;
+            value += decimal; // add fraction to integer part
+            break; // finished parsing number
         }
     }
 
-    int degrees = (int)(value / 100.0f);
-    float minutes = value - (degrees * 100.0f);
-    float result = degrees + (minutes / 60.0f);
+    int degrees = (int)(value / 100.0f); // NMEA format: DDDMM.MMMM -> degrees = value/100
+    float minutes = value - (degrees * 100.0f); // minutes portion
+    float result = degrees + (minutes / 60.0f); // convert minutes to decimal degrees
 
-    if (dir == 'S' || dir == 'W') result = -result;
+    if (dir == 'S' || dir == 'W') result = -result; // southern/western hemispheres negative
     return result;
 }
 
 static void gps_print_from_sentence(const char *sentence)
 {
     if (!sentence || sentence[0] == '\0') {
-        printk("GPS: no data\n");
+        printk("GPS: no data\n"); // nothing to parse
         return;
     }
 
     char line[GPS_SENTENCE_MAX_LEN];
-    strncpy(line, sentence, sizeof(line));
-    line[sizeof(line) - 1] = '\0';
+    strncpy(line, sentence, sizeof(line)); // copy into local buffer to mutate safely
+    line[sizeof(line) - 1] = '\0'; // ensure NUL termination
 
     char *p = line;
     int field = 0;
-    char *fields[15] = { 0 };
+    char *fields[15] = { 0 }; // pointers to comma-separated fields
 
     fields[field++] = p;
     while (*p && field < (int)sizeof(fields)/sizeof(fields[0])) {
         if (*p == ',') {
-            *p = '\0';
-            fields[field++] = p + 1;
+            *p = '\0';  // replace comma with NUL terminator
+            fields[field++] = p + 1;  // next field starts after comma
         }
         p++;
     }
 
     /* GGA fields: 1=time, 2=lat, 3=N/S, 4=lon, 5=E/W, 7=sat, 9=alt */
     if (fields[1] && fields[2] && fields[3] && fields[4] && fields[5] && fields[9]) {
-        float lat = nmea_to_degrees(fields[2], fields[3][0]);
-        float lon = nmea_to_degrees(fields[4], fields[5][0]);
+        float lat = nmea_to_degrees(fields[2], fields[3][0]);   // lat in decimal degrees
+        float lon = nmea_to_degrees(fields[4], fields[5][0]);   // lon in decimal degrees
 
-        int hour = (fields[1][0] - '0') * 10 + (fields[1][1] - '0');
+        int hour = (fields[1][0] - '0') * 10 + (fields[1][1] - '0');    // hhmmss parsing
         int min  = (fields[1][2] - '0') * 10 + (fields[1][3] - '0');
         int sec  = (fields[1][4] - '0') * 10 + (fields[1][5] - '0');
 
@@ -135,7 +135,7 @@ int main(void)
                 uint8_t pattern = process_sensor_sample(&msg, init_get_mode());
                 (void)bus_out_write(bus, pattern);
                 gps_print_from_sentence(msg.gps_sentence);
-                if(msg.tcs_triggered && (mode == MODE_ADVANCED)) {
+                if(msg.tcs_triggered && (mode != MODE_ADVANCED)) {
                     init_set_test_mode();
                 }
                 did_work = true;

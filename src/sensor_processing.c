@@ -15,16 +15,16 @@
 #include "project_config.h"
 
 /* ---- internal stats types ---- */
-typedef float stat_scalar_t_local;
+typedef float stat_scalar_t_local; // local float type for aggregations
 
 typedef struct {
-    stat_scalar_t_local sum;
-    stat_scalar_t_local min;
-    stat_scalar_t_local max;
-    uint32_t count;
+    stat_scalar_t_local sum;    // accumulate sum
+    stat_scalar_t_local min;    // minimum seen
+    stat_scalar_t_local max;    // maximum seen
+    uint32_t count;             // sample count
 } stats_t;
 
-static stats_t temp_stats;
+static stats_t temp_stats;  // temperature aggregator
 static stats_t rh_stats;
 static stats_t light_stats;
 static stats_t soil_stats;
@@ -33,7 +33,7 @@ static uint32_t dom_red_count   = 0;
 static uint32_t dom_green_count = 0;
 static uint32_t dom_blue_count  = 0;
 
-typedef struct { stat_scalar_t_local min, max; } axis_stats_t;
+typedef struct { stat_scalar_t_local min, max; } axis_stats_t; // accel axis min/max
 static axis_stats_t ax_stats;
 static axis_stats_t ay_stats;
 static axis_stats_t az_stats;
@@ -42,7 +42,7 @@ static axis_stats_t az_stats;
 void reset_all_stats(void)
 {
     temp_stats.sum = 0.0f;
-    temp_stats.min =  FLT_MAX;
+    temp_stats.min =  FLT_MAX; // set min to max sentinel
     temp_stats.max = -FLT_MAX;
     temp_stats.count = 0;
 
@@ -61,19 +61,19 @@ void reset_all_stats(void)
     soil_stats.max = -FLT_MAX;
     soil_stats.count = 0;
 
-    dom_red_count = dom_green_count = dom_blue_count = 0;
+    dom_red_count = dom_green_count = dom_blue_count = 0; // reset color counters
 
-    ax_stats.min = ay_stats.min = az_stats.min = FLT_MAX;
+    ax_stats.min = ay_stats.min = az_stats.min = FLT_MAX;   // reset accel stats
     ax_stats.max = ay_stats.max = az_stats.max = -FLT_MAX;
 }
 
 /* local helpers */
 static inline void stats_add(stats_t *s, stat_scalar_t_local v)
 {
-    if (v < s->min) s->min = v;
-    if (v > s->max) s->max = v;
-    s->sum += v;
-    s->count++;
+    if (v < s->min) s->min = v; // update min
+    if (v > s->max) s->max = v; // update max
+    s->sum += v;                // add to sum
+    s->count++;                 // increment count
 }
 
 static inline void axis_add(axis_stats_t *a, stat_scalar_t_local v)

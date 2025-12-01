@@ -25,8 +25,8 @@ typedef float stat_scalar_t;
 #define LIGHT_SENSITIVITY 2.0f
 
 /* Sensor/limits */
-#define TEMP_MIN_C      (-10.0f)
-#define TEMP_MAX_C      25.0f
+#define TEMP_MIN_C      (-10.0f) //Parameters to receive alert
+#define TEMP_MAX_C      50.0f
 #define RH_MIN_PCT      25.0f
 #define RH_MAX_PCT      75.0f
 #define LIGHT_MIN_PCT   20.0f

@@ -1,91 +1,94 @@
 / {
     aliases { 
-        analogin0 = &adc1;
-        led0 = &led_r;
-        led1 = &led_g;
-        led2 = &led_b;
-        sw0  = &user_button_3;
-        rgbled = &rgb_led_ctrl;
-        tcswake = &tcs_int_pin;
-        soil = &soil_gpio_d2;
+        analogin0 = &adc1;            /* alias for ADC device used as analogin0 */
+        led0 = &led_r;                /* alias LED0 -> red LED node */
+        led1 = &led_g;                /* alias LED1 -> green LED node */
+        led2 = &led_b;                /* alias LED2 -> blue LED node */
+        sw0  = &user_button_3;        /* alias for user button (if available) */
+        rgbled = &rgb_led_ctrl;       /* alias for TCS LED control GPIO */
+        tcswake = &tcs_int_pin;       /* alias for TCS interrupt GPIO */
+        soil = &soil_gpio_d2;         /* alias for soil moisture power/control GPIO */
+        light = &light_gpio_d2;       /* alias for LDR power/control GPIO */
     };
 
-
-
     gpios {
-        compatible = "gpio-leds";
+        compatible = "gpio-leds";     /* node compatible for grouped GPIO LEDs */
 
         /* RGB COMMON ANODE -> use GPIO_ACTIVE_LOW */
         led_r: red_led {
-            gpios = <&gpiob 5 GPIO_ACTIVE_LOW>;   /* D4 = PB5 */
-            label = "LED Red";
+            gpios = <&gpiob 5 GPIO_ACTIVE_LOW>;   /* PB5: red LED, active low for common-anode */
+            label = "LED Red";                    
         };
         led_g: green_led {
-            gpios = <&gpiob 8 GPIO_ACTIVE_LOW>;   /* D5 = PB8 */
+            gpios = <&gpiob 8 GPIO_ACTIVE_LOW>;   /* PB8: green LED, active low for common-anode */
             label = "LED Green";
         };
         led_b: blue_led {
-            gpios = <&gpiob 10 GPIO_ACTIVE_LOW>;  /* D6 = PB10 */
+            gpios = <&gpiob 10 GPIO_ACTIVE_LOW>;  /* PB10: blue LED, active low for common-anode */
             label = "LED Blue";
         };
         rgb_led_ctrl: rgb_led_ctrl {
-            gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;  /* controller GPIO to power/enable TCS LED (active high) */
             label = "LED TCS";
         };
         tcs_int_pin: tcs_int_pin {
-            gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
+            gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;   /* TCS INT pin on PA5 (active low interrupt) */
             label = "TCS_INT_PIN";
         };
         soil_gpio_d2: soil_gpio_d2 {
-            gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;  /* GPIO to enable soil moisture circuit (active high) */
             label = "SOIL MOISTURE";
+        };
+        light_gpio_d2: light_gpio_d2 {
+            gpios = <&gpiob 2 GPIO_ACTIVE_HIGH>;  /* GPIO to enable LDR / light circuit (active high) */
+            label = "LDR";
         };
     };
 };
 
 &adc1 {
-    status = "okay";
-    pinctrl-0 = <&adc1_in0_pa0 &adc1_in1_pa1>;
+    status = "okay";                         /* enable ADC1 node */
+    pinctrl-0 = <&adc1_in0_pa0 &adc1_in1_pa1>; /* pinmux for ADC channels PA0 and PA1 */
     pinctrl-names = "default";
-    #address-cells = <1>;
+    #address-cells = <1>;                   /* standard DT array sizing for children */
     #size-cells = <0>;
 
     channel@0 {
-        reg = <0>;
-        zephyr,gain = "ADC_GAIN_1";
-        zephyr,reference = "ADC_REF_INTERNAL";
-        zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
-        zephyr,resolution = <12>;
+        reg = <0>;                          /* channel index 0 (maps to ADC channel 0) */
+        zephyr,gain = "ADC_GAIN_1";         /* driver: ADC gain */
+        zephyr,reference = "ADC_REF_INTERNAL"; /* driver: ADC reference */
+        zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>; /* acquisition time default */
+        zephyr,resolution = <12>;           /* 12-bit ADC resolution */
     };
 
     channel@1 {
-        reg = <1>;
+        reg = <1>;                          /* channel index 1 (ADC channel 1) */
         zephyr,gain = "ADC_GAIN_1";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
-        zephyr,resolution = <12>;
+        zephyr,resolution = <12>;           /* 12-bit as well */
     };
 };
 
 &i2c1 {
-    status = "okay";
-    clock-frequency = <400000>;
-    pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>;
+    status = "okay";                         /* enable I2C1 bus */
+    clock-frequency = <400000>;              /* 400 kHz fast-mode I2C */
+    pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>; /* SCL = PB6, SDA = PB7 pinmux */
     pinctrl-names = "default";
 
-    mma8451@1d {
+    mma8451@1d {                             /* accelerometer node on addr 0x1d (Hardware address of the chip on the bus (Sensor datasheet I²C address)) */
         compatible = "nxp,mma8451";
         reg = <0x1d>;
         status = "okay";
     };
 
-    si7021@40 {
+    si7021@40 {                              /* humidity/temperature sensor on addr 0x40 */
         compatible = "silabs,si7021";
         reg = <0x40>;
         status = "okay";
     };
 
-    tcs34725@29 {
+    tcs34725@29 {                            /* color sensor node on addr 0x29 */
         compatible = "ams,tcs34725";
         reg = <0x29>;
         status = "okay";
@@ -93,25 +96,19 @@
 
 };
 
+
 &usart1 {
-    status = "okay";
-    current-speed = <9600>;
-    pinctrl-0 = <&usart1_rx_pa10>;
+    status = "okay";                         /* enable USART1 for GPS */
+    current-speed = <9600>;                  /* typical GPS baud */
+    pinctrl-0 = <&usart1_rx_pa10>;           /* RX pin mapped to PA10 */
     pinctrl-names = "default";
 };
 
 &pinctrl {
     adc1_in0_pa0: adc1_in0_pa0 {
-        pinmux = <STM32_PINMUX('A', 0, ANALOG)>;
+        pinmux = <STM32_PINMUX('A', 0, ANALOG)>; /* PA0 configured as analog for ADC channel 0 */
     };
     adc1_in1_pa1: adc1_in1_pa1 {
-        pinmux = <STM32_PINMUX('A', 1, ANALOG)>;
+        pinmux = <STM32_PINMUX('A', 1, ANALOG)>; /* PA1 configured as analog for ADC channel 1 */
     };
-};
-
-&usart1 {
-    status = "okay";
-    current-speed = <9600>;
-    pinctrl-0 = <&usart1_rx_pa10>;
-    pinctrl-names = "default";
 };

@@ -126,7 +126,7 @@ int init_system(void)
 {
     int rc = 0;
 
-    /* Configure RGB leds (required) */
+    /* Configure RGB leds */
     rc = configure_dt_pin(&ledBlue, GPIO_OUTPUT_INACTIVE);
     if (rc) return rc;
     rc = configure_dt_pin(&ledRed, GPIO_OUTPUT_INACTIVE);
@@ -134,7 +134,7 @@ int init_system(void)
     rc = configure_dt_pin(&ledGreen, GPIO_OUTPUT_INACTIVE);
     if (rc) return rc;
 
-    /* Onboard leds (optional) */
+    /* Onboard leds */
     (void)configure_dt_pin(&onboard_blue_led, GPIO_OUTPUT_INACTIVE);
     (void)configure_dt_pin(&onboard_green_led, GPIO_OUTPUT_INACTIVE);
     (void)configure_dt_pin(&onboard_red_led, GPIO_OUTPUT_INACTIVE);
