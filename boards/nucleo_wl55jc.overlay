@@ -7,6 +7,7 @@
         sw0  = &user_button_3;
         rgbled = &rgb_led_ctrl;
         tcswake = &tcs_int_pin;
+        soil = &soil_gpio_d2;
     };
 
 
@@ -34,6 +35,10 @@
         tcs_int_pin: tcs_int_pin {
             gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
             label = "TCS_INT_PIN";
+        };
+        soil_gpio_d2: soil_gpio_d2 {
+            gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+            label = "SOIL MOISTURE";
         };
     };
 };

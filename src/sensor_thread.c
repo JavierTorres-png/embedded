@@ -94,6 +94,7 @@ bool finished = false;
 
 static const struct gpio_dt_spec rgb_led = GPIO_DT_SPEC_GET(DT_ALIAS(rgbled), gpios);
 static const struct gpio_dt_spec tcswake_gpio = GPIO_DT_SPEC_GET(DT_ALIAS(tcswake), gpios);
+static const struct gpio_dt_spec soilGpio = GPIO_DT_SPEC_GET(DT_ALIAS(soil), gpios);
 static struct gpio_callback tcswake_cb_data;
 static atomic_t tcswake_flag = ATOMIC_INIT(0);
 
@@ -540,6 +541,16 @@ static void sensor_entry(void *a, void *b, void *c)
         return;
     }
 
+    if (!device_is_ready(soilGpio.port)) {
+        printk("Error: Soil GPIO device not ready\n");
+        return;
+    }
+
+    if (gpio_pin_configure_dt(&soilGpio, GPIO_OUTPUT_INACTIVE) < 0) {
+        printk("Error: configuring Soil GPIO\n");
+        return;
+    }
+
     k_mutex_init(&latest_mtx);
 
     bool accel_ok = (mma_init(&accel_range) == 0);
@@ -552,8 +563,12 @@ static void sensor_entry(void *a, void *b, void *c)
         int16_t light_raw = 0;
         int16_t soil_raw  = 0;
 
+        gpio_pin_set_dt(&soilGpio, 1);
+
         (void)read_adc_raw(0, &light_raw); // Channel 0 – LDR
         (void)read_adc_raw(1, &soil_raw);  // Channel 1 – Soil moisture
+
+        gpio_pin_set_dt(&soilGpio, 0);
 
         int16_t ax = 0, ay = 0, az = 0;
         if (accel_ok) {

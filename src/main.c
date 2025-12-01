@@ -83,10 +83,10 @@ static void gps_print_from_sentence(const char *sentence)
 
         printk("GPS:\n");
         printk("\tTime: %02d:%02d:%02d\n", hour, min, sec);
-        printk("\tLat: %.6f° %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
-        printk("\tLon: %.6f° %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
+        printk("\tLat: %.6f deg %c\n", (lat >= 0 ? lat : -lat), fields[3][0]);
+        printk("\tLon: %.6f deg %c\n", (lon >= 0 ? lon : -lon), fields[5][0]);
         printk("\tAlt: %s m\n", fields[9]);
-        if (fields[7]) printk("\tSatellites: %s\n", fields[7]);
+        if (fields[7]) printk("\tSatellites: %s\n\n", fields[7]);
     } else {
         printk("GPS: incomplete GGA sentence\n");
     }
