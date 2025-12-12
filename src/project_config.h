@@ -13,6 +13,9 @@ typedef float stat_scalar_t;
 #define MODE_NORMAL_SLEEP_TIME_SEC 30U
 #define MODE_ADVANCED_SLEEP_TIME_SEC 30U
 
+/* hourly stats (hours) */
+#define HOURLY_STATS_TIME_HOUR 1U
+
 /* Modes */
 #define MODE_TEST   1
 #define MODE_NORMAL 2
@@ -31,8 +34,8 @@ typedef float stat_scalar_t;
 #define RH_MAX_PCT      75.0f
 #define LIGHT_MIN_PCT   20.0f
 #define LIGHT_MAX_PCT   90.0f
-#define SOIL_MIN_PCT    30.0f
-#define SOIL_MAX_PCT    80.0f
+#define SOIL_MIN_PCT    10.0f
+#define SOIL_MAX_PCT    20.0f
 #define COLOR_CLEAR_MIN 1u
 
 /* accelerometer limit (m/s^2) */

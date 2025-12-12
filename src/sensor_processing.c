@@ -179,7 +179,7 @@ uint8_t process_sensor_sample(const struct sensor_msg *msg, int mode)
     }
 
     /* Print per-sample summary (kept concise) */
-    printk("SAMPLE: soil=%.1f%% light=%.2f%% temp=%.2fC rh=%.2f%% clr=%u R=%u G=%u B=%u dom=%s\n",
+    printk("SAMPLE: soil=%.1f%% light=%.1f%% temp=%.1fC rh=%.1f%% clr=%u R=%u G=%u B=%u dom=%s\n",
            (double)soil_pct, (double)light_pct, (double)tc, (double)rh,
            msg->clr_raw, R, G, B, dominant);
     printk("ACCEL (m/s^2): X=%.2f Y=%.2f Z=%.2f\n", (double)ax_g, (double)ay_g, (double)az_g);

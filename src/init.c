@@ -198,7 +198,7 @@ void init_set_normal_mode(void)
     k_timer_stop(&read_ticker);
     clear_read_flags();
     k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME_SEC));
-    k_timer_start(&hourly_timer, K_MINUTES(1), K_MINUTES(1));
+    k_timer_start(&hourly_timer, K_HOURS(HOURLY_STATS_TIME_HOUR), K_HOURS(HOURLY_STATS_TIME_HOUR));
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 0);
     if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 1);
@@ -214,7 +214,7 @@ void init_set_advanced_mode(void)
     k_timer_stop(&read_ticker);
     clear_read_flags();
     k_timer_start(&read_ticker, K_SECONDS(0), K_SECONDS(MODE_NORMAL_SLEEP_TIME_SEC));
-    k_timer_start(&hourly_timer, K_MINUTES(1), K_MINUTES(1));
+    k_timer_start(&hourly_timer, K_HOURS(HOURLY_STATS_TIME_HOUR), K_HOURS(HOURLY_STATS_TIME_HOUR));
 
     if (onboard_blue_led.port) (void)gpio_pin_set_dt(&onboard_blue_led, 0);
     if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 0);
