@@ -354,8 +354,6 @@ static int tcs_init(void)
 
     if (!device_is_ready(tcs.bus)) return -ENODEV;
 
-    tcs_led_on();
-
     /* Power on, then enable ADC */
     if (tcs_write8(TCS_ENABLE, TCS_EN_PON) < 0) return -EIO;  /* write PON */
     k_msleep(3);
@@ -364,10 +362,6 @@ static int tcs_init(void)
     /* Integration time + gain */
     if (tcs_write8(TCS_ATIME,   TCS_ATIME_154MS) < 0) return -EIO;  /* set integration time */
     if (tcs_write8(TCS_CONTROL, TCS_GAIN_4X)     < 0) return -EIO;  /* set gain */
-
-    /* Wait at least 1 integration period before first read */
-    k_msleep(160);
-
 
     sensor_interrupt_init();
 
@@ -378,8 +372,9 @@ static int tcs_read_crgb_led(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
 {
     int rc;
 
-    //tcs_led_on();
-    k_msleep(10);  /* short settle time for LED */
+    tcs_led_on();
+
+    k_msleep(160); /* wait ~154 ms integration + margin */
 
     rc = tcs_read16(TCS_CDATAL, c);
     if (rc < 0) { return rc; }
@@ -390,7 +385,8 @@ static int tcs_read_crgb_led(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
     rc = tcs_read16(TCS_BDATAL, b);
     if (rc < 0) { return rc; }
 
-    //tcs_led_off();
+    tcs_led_off();
+
     return 0;
 }
 

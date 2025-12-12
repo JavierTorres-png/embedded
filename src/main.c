@@ -143,7 +143,6 @@ int main(void)
             if (init_get_mode() == MODE_NORMAL) {
                 print_hourly_stats();
             }
-            did_work = true;
         }
 
         k_msleep(50);
