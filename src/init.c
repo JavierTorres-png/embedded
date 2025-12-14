@@ -220,7 +220,7 @@ void init_set_advanced_mode(void)
     if (onboard_green_led.port) (void)gpio_pin_set_dt(&onboard_green_led, 0);
     if (onboard_red_led.port) (void)gpio_pin_set_dt(&onboard_red_led, 1);
 
-    printk("init: ADVANCED (ECO) mode\n");
+    printk("init: ADVANCED mode\n");
 }
 
 int init_toggle_mode(void)
