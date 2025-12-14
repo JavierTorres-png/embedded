@@ -14,6 +14,8 @@ extern "C" {
  */
 uint8_t process_sensor_sample(const struct sensor_msg *msg, int mode);
 
+void gps_print_from_sentence(const char *sentence);
+
 /* Print + reset hourly statistics (call when hourly event fires). */
 void print_hourly_stats(void);
 
